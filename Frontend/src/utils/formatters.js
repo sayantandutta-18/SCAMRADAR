@@ -98,3 +98,43 @@ export const formatIdentifier = (identifier, type) => {
   }
   return identifier;
 };
+
+// Mask sensitive identifier for privacy in public views
+export const maskIdentifier = (identifier, type) => {
+  if (!identifier) return 'N/A';
+  const str = String(identifier).trim();
+  if (type === 'PHONE') {
+    if (str.length >= 10) {
+      const last4 = str.slice(-4);
+      const prefix = str.length > 10 ? `${str.slice(0, -8)} ` : '+91 ';
+      return `${prefix}*****${last4}`;
+    }
+    return str.slice(0, 2) + '****' + str.slice(-2);
+  }
+  if (type === 'EMAIL') {
+    const parts = str.split('@');
+    if (parts.length === 2) {
+      const name = parts[0];
+      const domain = parts[1];
+      const visible = name.slice(0, 2);
+      return `${visible}***@${domain}`;
+    }
+    return str.slice(0, 2) + '***';
+  }
+  if (type === 'UPI') {
+    const parts = str.split('@');
+    if (parts.length === 2) {
+      return `${parts[0].slice(0, 3)}***@${parts[1]}`;
+    }
+    return str.slice(0, 3) + '***';
+  }
+  if (type === 'URL') {
+    try {
+      const url = new URL(str.startsWith('http') ? str : `https://${str}`);
+      return `${url.hostname}${url.pathname.length > 1 ? '/...' : ''}`;
+    } catch {
+      return str.length > 28 ? `${str.slice(0, 25)}...` : str;
+    }
+  }
+  return str.length > 6 ? `${str.slice(0, 3)}***${str.slice(-2)}` : `${str.slice(0, 2)}***`;
+};

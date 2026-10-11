@@ -1,131 +1,169 @@
 import React from 'react';
-import { Shield, MessageSquare, CreditCard, Link as LinkIcon, Briefcase, TrendingUp, FileText, AlertOctagon } from 'lucide-react';
+import { Shield, MessageSquare, CreditCard, Link as LinkIcon, Briefcase, TrendingUp, FileText, AlertOctagon, PhoneCall, ShieldAlert } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const safetyTopics = [
   {
     id: 1,
-    title: 'OTP Safety',
+    title: 'OTP & Authentication Safety',
     icon: MessageSquare,
+    badge: 'CRITICAL',
     points: [
-      'Never share your OTP with anyone over a call or message.',
-      'Banks or officials will never ask for your OTP.',
-      'Always check the SMS context before entering an OTP.',
-      'Be wary of urgency or threats demanding an OTP.'
-    ]
+      'Never share your One-Time Password (OTP) with anyone over call, SMS, or chat.',
+      'Banks and government agencies will never ask for your OTP or password.',
+      'Always inspect the SMS header and context before submitting an OTP anywhere.',
+      'Beware of urgent calls claiming your account will be blocked without an OTP.',
+    ],
   },
   {
     id: 2,
-    title: 'UPI Safety',
+    title: 'UPI & QR Code Protection',
     icon: CreditCard,
+    badge: 'PAYMENTS',
     points: [
-      'UPI PIN is only needed to send money, not to receive it.',
-      'Verify the recipient\'s name before confirming a transaction.',
-      'Do not scan unknown QR codes to receive payments.',
-      'Ignore random payment requests from unknown numbers.'
-    ]
+      'Entering your UPI PIN always sends money; receiving money NEVER requires entering your PIN.',
+      'Do not scan QR codes sent by buyers or strangers on OLX/Marketplace.',
+      'Always verify the verified merchant name displayed on the UPI app before confirming.',
+      'Decline unexpected collect requests sent from unknown virtual payment addresses.',
+    ],
   },
   {
     id: 3,
-    title: 'Banking Scam Awareness',
+    title: 'Bank & KYC Impersonation',
     icon: Shield,
+    badge: 'IMPERSONATION',
     points: [
-      'Only use official banking apps from verified stores.',
-      'Banks will not ask for your ATM PIN or CVV.',
-      'Beware of calls claiming your account will be blocked.',
-      'Regularly check your bank statements for unauthorized transactions.'
-    ]
+      'Banks do not update KYC via links in SMS or WhatsApp.',
+      'Never download screen-sharing tools (e.g. AnyDesk, TeamViewer, RustDesk) on request.',
+      'Always contact your bank through official helpline numbers printed on your physical card.',
+      'Never reveal your ATM card PIN, CVV, or net banking credentials.',
+    ],
   },
   {
     id: 4,
-    title: 'Phishing Awareness',
+    title: 'Phishing & Malicious URLs',
     icon: LinkIcon,
+    badge: 'CYBER',
     points: [
-      'Check URLs carefully for misspellings (e.g., g00gle.com instead of google.com).',
-      'Look for HTTPS and the padlock icon on websites.',
-      'Do not click on links in unsolicited emails or SMS.',
-      'Verify the sender\'s email address, not just the display name.'
-    ]
+      'Look closely at domain spellings (e.g., sbi-login-verify.com is not sbi.co.in).',
+      'Verify the padlock and valid SSL certificate on login and payment portals.',
+      'Do not open APK attachments or shortened URLs sent via SMS or Telegram.',
+      'Check unknown links on ScamRadar before opening them in your browser.',
+    ],
   },
   {
     id: 5,
-    title: 'Fake Job Scams',
+    title: 'Work-From-Home & Job Scams',
     icon: Briefcase,
+    badge: 'EMPLOYMENT',
     points: [
-      'Genuine employers will never ask for a fee or deposit.',
-      'Be cautious of offers that seem too good to be true with minimal effort.',
-      'Verify the company and the recruiter\'s credentials.',
-      'Do not share personal documents unless verifying the employer.'
-    ]
+      'Legitimate companies never ask candidates to pay registration fees or training deposits.',
+      'Be alert to Telegram tasks requiring you to "like YouTube videos" for instant cash.',
+      'Verify company domains and recruiter profiles directly on official LinkedIn pages.',
+      'Do not surrender original identity documents or bank account credentials.',
+    ],
   },
   {
     id: 6,
-    title: 'Investment Scams',
+    title: 'Investment & Crypto Schemes',
     icon: TrendingUp,
+    badge: 'FINANCIAL',
     points: [
-      'Avoid promises of guaranteed high returns with no risk.',
-      'Check if the platform is registered with regulatory authorities.',
-      'Do not invest through unknown Telegram or WhatsApp groups.',
-      'Take your time; scammers often create a false sense of urgency.'
-    ]
+      'Guaranteed high-return offers (e.g., "double your money in 7 days") are always scams.',
+      'Check if financial entities are registered with SEBI, RBI, or regulatory authorities.',
+      'Do not deposit money into private individual bank accounts for trading platforms.',
+      'Scammers fabricate high-profit dashboards to lure you into depositing larger amounts.',
+    ],
   },
   {
     id: 7,
-    title: 'KYC Scams',
+    title: 'Delivery & Courier Fraud',
     icon: FileText,
+    badge: 'LOGISTICS',
     points: [
-      'Banks do not update KYC via SMS links or calls.',
-      'Use only the official app or visit the branch for KYC updates.',
-      'Do not download screen-sharing apps (like AnyDesk) if asked by a "support agent".',
-      'Ignore messages threatening account suspension due to pending KYC.'
-    ]
+      'Scammers send fake SMS stating "package delivery failed—pay ₹5 re-delivery fee".',
+      'Clicking that link leads to fake payment screens that harvest banking credentials.',
+      'Track shipments exclusively on the official carrier site using your tracking number.',
+    ],
   },
   {
     id: 8,
-    title: 'What To Do After Being Scammed',
+    title: 'Emergency: If You Have Been Scammed',
     icon: AlertOctagon,
+    badge: 'IMMEDIATE ACTION',
     points: [
-      'Immediately block the contact and do not communicate further.',
-      'Call the cybercrime helpline (1930 in India) or file a report online.',
-      'Contact your bank immediately to freeze your accounts or block cards.',
-      'Change passwords for your critical accounts.'
-    ]
-  }
+      'Immediately call the National Cyber Crime Helpline: 1930 (India) or visit cybercrime.gov.in.',
+      'Contact your bank within the golden hour to freeze payment gateways and dispute transactions.',
+      'Preserve all evidence: screenshots, transaction reference IDs, sender handles, and messages.',
+      'Report the identifier on ScamRadar so cryptographic evidence is preserved on-chain.',
+    ],
+  },
 ];
 
 const SafetyPage = () => {
   return (
-    <div className="min-h-screen bg-slate-900 pt-24 pb-20 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-white mb-4">Safety Center</h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Stay informed and stay safe. Learn about common scams and how to protect yourself and your loved ones from digital fraud.
-          </p>
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="text-center mb-12 max-w-2xl mx-auto">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono mb-3">
+          <ShieldAlert className="w-3.5 h-3.5" />
+          <span>CYBERSECURITY AWARENESS DIRECTORY</span>
         </div>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Safety Center & Defense Guides</h1>
+        <p className="text-slate-400 text-sm sm:text-base mt-2">
+          Practical guides, red flags, and defensive rules to safeguard yourself against digital fraud.
+        </p>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {safetyTopics.map((topic) => {
-            const IconComponent = topic.icon;
-            return (
-              <div key={topic.id} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 hover:bg-white/10 transition-colors">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="p-3 bg-blue-500/20 rounded-xl">
-                    <IconComponent className="w-8 h-8 text-blue-400" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {safetyTopics.map((topic) => {
+          const IconComponent = topic.icon;
+          return (
+            <div
+              key={topic.id}
+              className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 sm:p-7 hover:border-cyan-500/30 transition-all flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-3 mb-5">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-slate-800 rounded-xl border border-white/5">
+                      <IconComponent className="w-6 h-6 text-cyan-400" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white">{topic.title}</h3>
                   </div>
-                  <h3 className="text-xl font-bold text-white">{topic.title}</h3>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+                    {topic.badge}
+                  </span>
                 </div>
-                <ul className="space-y-3">
+
+                <ul className="space-y-2.5 text-xs sm:text-sm text-slate-300">
                   {topic.points.map((point, index) => (
-                    <li key={index} className="flex items-start text-slate-300">
-                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 mr-3 flex-shrink-0"></span>
-                      <span>{point}</span>
+                    <li key={index} className="flex items-start">
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 mr-2.5 flex-shrink-0"></span>
+                      <span className="leading-relaxed">{point}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-            );
-          })}
-        </div>
+
+              {topic.id === 8 && (
+                <div className="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-3">
+                  <a
+                    href="tel:1930"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg text-xs transition-colors"
+                  >
+                    <PhoneCall className="w-3.5 h-3.5" /> Call 1930 Helpline
+                  </a>
+                  <Link
+                    to="/report"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 rounded-lg text-xs font-semibold transition-colors"
+                  >
+                    File Scam Report
+                  </Link>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

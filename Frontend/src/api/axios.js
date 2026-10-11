@@ -19,6 +19,7 @@ api.interceptors.response.use(
         message: error.response.data?.message || 'Something went wrong',
         errors: error.response.data?.errors || [],
         existingReport: error.response.data?.existingReport || null,
+        data: error.response.data || null,
         success: false,
       };
       return Promise.reject(serverError);

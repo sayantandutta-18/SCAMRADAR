@@ -1,30 +1,28 @@
 import React from 'react';
 import ReportForm from '../components/reports/ReportForm';
-import { Info } from 'lucide-react';
+import { ShieldAlert, ShieldCheck } from 'lucide-react';
 
 const ReportPage = () => {
   return (
-    <div className="min-h-screen bg-slate-900 pt-24 pb-12 px-4">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-white mb-4">Report a Scam</h1>
-          <p className="text-slate-400 text-lg">
-            Help protect the community by reporting suspicious activity. Your report will be analyzed by AI and permanently recorded on the blockchain.
-          </p>
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="text-center mb-8 max-w-2xl mx-auto">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono mb-4">
+          <ShieldAlert className="w-3.5 h-3.5" />
+          <span>COMMUNITY DEFENSE REGISTRY</span>
         </div>
-        
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 shadow-xl">
-          <ReportForm />
-        </div>
-        
-        <div className="mt-8 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex items-start gap-4">
-          <Info className="w-6 h-6 text-emerald-400 flex-shrink-0 mt-0.5" />
-          <div>
-            <h4 className="text-emerald-400 font-semibold mb-1">How your report helps</h4>
-            <p className="text-slate-300 text-sm">
-              Every report adds to our collective intelligence. By sharing your experience, you help our AI identify new scam patterns and prevent others from falling victim to similar frauds.
-            </p>
-          </div>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Report a Scam Incident</h1>
+        <p className="text-slate-400 text-sm sm:text-base mt-2">
+          Help protect others by reporting fraudulent phone numbers, UPI handles, links, or messages. AI evaluates threat indicators and evidence is hashed for integrity.
+        </p>
+      </div>
+
+      <ReportForm />
+
+      <div className="mt-8 bg-cyan-500/5 border border-cyan-500/20 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 max-w-2xl mx-auto">
+        <ShieldCheck className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+        <div className="text-xs text-slate-300 leading-relaxed">
+          <span className="font-bold text-white block mb-0.5">Community Defense Impact</span>
+          Every report feeds our threat correlation engine. By logging suspicious encounters, you protect people from targeted scams before money or identity is compromised.
         </div>
       </div>
     </div>

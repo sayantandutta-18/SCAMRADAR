@@ -19,9 +19,9 @@ const ScamChecker = () => {
     setHasSearched(true);
     try {
       const response = await search({ identifier, identifierType });
-      // API might return data in different shapes depending on implementation
-      // Assuming response.data.reports or response.reports or just array
-      const reports = response?.data?.reports || response?.reports || (Array.isArray(response) ? response : []);
+      const reports = Array.isArray(response?.data)
+        ? response.data
+        : (response?.data?.reports || response?.reports || (Array.isArray(response) ? response : []));
       setResults(reports);
     } catch (err) {
       console.error('Search failed:', err);
