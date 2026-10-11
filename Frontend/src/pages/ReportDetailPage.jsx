@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Calendar, CheckCircle, Eye, EyeOff, Clock } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, CheckCircle, Eye, EyeOff, Clock, Database } from 'lucide-react';
 import { getReportById } from '../api/reports.api';
 import { useApi } from '../hooks/useApi';
 import { formatDateTime, getRiskColorClass, maskIdentifier } from '../utils/formatters';
@@ -175,21 +175,28 @@ const ReportDetailPage = () => {
             </p>
           </div>
 
-          {/* Blockchain Status */}
-          <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300 mb-4">
-              On-Chain Proof Verification
-            </h3>
-            <BlockchainBadge blockchain={report.blockchain || { registered: false }} />
-            {report.blockchain?.registered && (
-              <div className="mt-4 flex items-start gap-2 text-xs text-emerald-400 bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20">
-                <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                <p>
-                  Report payload is cryptographically hashed with SHA-256 and stored immutably on the ScamReportRegistry contract.
-                </p>
-              </div>
-            )}
-          </div>
+            {/* Blockchain Status */}
+            <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300 mb-4">
+                On-Chain Proof Verification
+              </h3>
+              <BlockchainBadge blockchain={report.blockchain || { registered: false }} />
+              {report.blockchain?.registered && (
+                <div className="mt-4 flex items-start gap-2 text-xs text-emerald-400 bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20">
+                  <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <p>
+                    Report payload is cryptographically hashed with SHA-256 and stored immutably on the ScamReportRegistry contract.
+                  </p>
+                </div>
+              )}
+              <Link
+                to={`/explorer?id=${report._id}`}
+                className="mt-4 w-full py-2 px-3 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+              >
+                <Database className="w-3.5 h-3.5" />
+                <span>Audit Smart Contract Proof</span>
+              </Link>
+            </div>
         </div>
       </div>
     </div>

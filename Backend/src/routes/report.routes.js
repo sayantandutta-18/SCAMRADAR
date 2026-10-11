@@ -7,6 +7,7 @@ const {
   getReportByIdController,
   getReportStatsController,
   getMapReportsController,
+  verifyReportController,
 } = require("../controllers/report.controller");
 
 const {
@@ -74,6 +75,22 @@ router.get(
 router.get(
   "/map",
   getMapReportsController
+);
+
+
+// ================================
+// VERIFY REPORT ON BLOCKCHAIN
+// GET /api/reports/:id/verify
+// GET /api/reports/verify/:id
+// ================================
+router.get(
+  "/:id/verify",
+  verifyReportController
+);
+
+router.get(
+  "/verify/:id",
+  verifyReportController
 );
 
 

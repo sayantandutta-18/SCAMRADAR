@@ -5,6 +5,7 @@ const {
   getReportById,
   getReportStats,
   getMapReports,
+  verifyReportOnChain,
 } = require("../services/report.service");
 
 // ========================================
@@ -189,6 +190,33 @@ const getMapReportsController = async (req, res) => {
 
 
 // ========================================
+// VERIFY REPORT ON BLOCKCHAIN
+// ========================================
+const verifyReportController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await verifyReportOnChain(id);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Verify report error:", error.message);
+
+    if (error.statusCode === 404) {
+      return res.status(404).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to verify scam report on blockchain",
+      error: error.message,
+    });
+  }
+};
+
+
+// ========================================
 // EXPORT CONTROLLERS
 // ========================================
 module.exports = {
@@ -198,4 +226,5 @@ module.exports = {
   getReportByIdController,
   getReportStatsController,
   getMapReportsController,
+  verifyReportController,
 };

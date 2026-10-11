@@ -58,3 +58,9 @@ export const checkHealth = async () => {
   const response = await api.get('/health');
   return response.data;
 };
+
+// Verify report on blockchain
+export const verifyReportOnChain = async (id) => {
+  const response = await api.get(`/reports/${id}/verify`);
+  return response.data;
+};

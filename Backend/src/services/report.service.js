@@ -4,6 +4,8 @@ const { analyzeScamMessage } = require("./ai.service");
 
 const {
   registerReport,
+  getBlockchainReport,
+  verifyReport,
 } = require("./blockchain.service");
 
 const crypto = require("crypto");
@@ -332,6 +334,112 @@ const getMapReports = async () => {
 };
 
 
+// =====================================================
+// VERIFY REPORT ON BLOCKCHAIN (EXACT CANONICAL PAYLOAD)
+// =====================================================
+
+const verifyReportOnChain = async (reportId) => {
+  if (!reportId) {
+    const error = new Error("Report ID is required");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const report = await ScamReport.findById(reportId);
+  if (!report) {
+    const error = new Error("Scam report not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  // Exact canonical payload used during registration
+  const canonicalPayload = {
+    reportId: report._id.toString(),
+    identifier: report.identifier,
+    identifierType: report.identifierType,
+    message: report.message,
+    scamType: report.scamType,
+    riskScore: report.riskScore,
+    riskLevel: report.riskLevel,
+    createdAt: report.createdAt,
+  };
+
+  const reportDataForHash = JSON.stringify(canonicalPayload);
+  const hash = crypto.createHash("sha256").update(reportDataForHash).digest("hex");
+  const calculatedHash = `0x${hash}`;
+
+  let onChain = null;
+  let rpcError = null;
+
+  try {
+    onChain = await getBlockchainReport(report._id.toString());
+  } catch (err) {
+    rpcError = err.message || "Failed to query blockchain smart contract";
+  }
+
+  const reportMeta = {
+    _id: report._id.toString(),
+    identifier: report.identifier,
+    identifierType: report.identifierType,
+    scamType: report.scamType,
+    riskScore: report.riskScore,
+    riskLevel: report.riskLevel,
+    status: report.status,
+    createdAt: report.createdAt,
+    location: report.location,
+  };
+
+  if (rpcError) {
+    return {
+      success: true,
+      reportId: report._id.toString(),
+      status: "RPC_UNAVAILABLE",
+      verified: false,
+      calculatedHash,
+      databaseBlockchain: report.blockchain,
+      rpcError,
+      canonicalPayload,
+      report: reportMeta,
+    };
+  }
+
+  if (!onChain || !onChain.exists) {
+    return {
+      success: true,
+      reportId: report._id.toString(),
+      status: "NOT_REGISTERED_ON_CHAIN",
+      verified: false,
+      calculatedHash,
+      onChain: null,
+      databaseBlockchain: report.blockchain,
+      canonicalPayload,
+      report: reportMeta,
+    };
+  }
+
+  const isHashMatch =
+    typeof onChain.reportHash === "string" &&
+    onChain.reportHash.toLowerCase() === calculatedHash.toLowerCase();
+
+  return {
+    success: true,
+    reportId: report._id.toString(),
+    status: isHashMatch ? "VERIFIED" : "HASH_MISMATCH",
+    verified: isHashMatch,
+    calculatedHash,
+    onChain: {
+      reportHash: onChain.reportHash,
+      timestamp: onChain.timestamp,
+      submittedBy: onChain.submittedBy,
+      exists: true,
+    },
+    databaseBlockchain: report.blockchain,
+    canonicalPayload,
+    report: reportMeta,
+  };
+};
+
+
 module.exports = {
   createReport,
   getReports,
@@ -339,4 +447,5 @@ module.exports = {
   getReportById,
   getReportStats,
   getMapReports,
+  verifyReportOnChain,
 };

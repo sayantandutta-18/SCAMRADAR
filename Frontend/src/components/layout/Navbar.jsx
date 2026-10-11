@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Shield, Menu, X, Home, Search, AlertOctagon, FileText, LayoutDashboard, Globe, ShieldAlert } from 'lucide-react';
+import { Shield, Menu, X, Home, Search, AlertOctagon, LayoutDashboard, Globe, ShieldAlert, Database, LifeBuoy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const navLinks = [
@@ -9,8 +9,9 @@ const navLinks = [
   { name: 'Report Scam', path: '/report', icon: AlertOctagon },
   { name: 'Threat Map', path: '/map', icon: Globe, badge: '3D' },
   { name: 'Intelligence', path: '/dashboard', icon: LayoutDashboard },
-  { name: 'Reports', path: '/reports', icon: FileText },
+  { name: 'Proof Explorer', path: '/explorer', icon: Database, badge: 'On-Chain' },
   { name: 'Safety Center', path: '/safety', icon: ShieldAlert },
+  { name: 'Emergency', path: '/emergency', icon: LifeBuoy, highlight: true },
 ];
 
 const Navbar = () => {
@@ -53,10 +54,12 @@ const Navbar = () => {
                   className={`relative px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
                     isActive
                       ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.15)]'
+                      : link.highlight
+                      ? 'text-red-400 hover:text-red-300 hover:bg-red-500/10 border border-red-500/25 bg-red-500/5'
                       : 'text-slate-300 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
+                  <Icon className={`w-4 h-4 ${link.highlight ? 'text-red-400' : isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
                   <span>{link.name}</span>
                   {link.badge && (
                     <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-cyan-400/20 text-cyan-300 border border-cyan-400/40 font-mono animate-pulse">
@@ -111,11 +114,13 @@ const Navbar = () => {
                     className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-base font-medium transition-colors ${
                       isActive
                         ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30'
+                        : link.highlight
+                        ? 'text-red-400 bg-red-500/10 border border-red-500/30 hover:bg-red-500/15'
                         : 'text-slate-300 hover:bg-white/5 hover:text-white'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className={`h-5 w-5 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
+                      <Icon className={`h-5 w-5 ${link.highlight ? 'text-red-400' : isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
                       <span>{link.name}</span>
                     </div>
                     {link.badge && (

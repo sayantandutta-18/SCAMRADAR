@@ -30,6 +30,7 @@ const Footer = () => {
               <li><Link to="/report" className="text-slate-400 hover:text-white transition-colors">Report Scam</Link></li>
               <li><Link to="/dashboard" className="text-slate-400 hover:text-white transition-colors">Live Dashboard</Link></li>
               <li><Link to="/map" className="text-slate-400 hover:text-white transition-colors">Threat Map</Link></li>
+              <li><Link to="/explorer" className="text-slate-400 hover:text-cyan-300 transition-colors">Blockchain Explorer</Link></li>
             </ul>
           </div>
           
@@ -37,9 +38,9 @@ const Footer = () => {
             <h3 className="text-sm font-semibold text-slate-200 tracking-wider uppercase mb-4">Resources</h3>
             <ul className="space-y-3">
               <li><Link to="/safety" className="text-slate-400 hover:text-white transition-colors">Safety Guides</Link></li>
+              <li><Link to="/emergency" className="text-red-400 hover:text-red-300 transition-colors font-medium">Emergency Help (1930)</Link></li>
               <li><Link to="/reports" className="text-slate-400 hover:text-white transition-colors">All Reports</Link></li>
               <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Terms of Service</a></li>
             </ul>
           </div>
         </div>

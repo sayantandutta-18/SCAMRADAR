@@ -12,6 +12,8 @@ const ReportDetailPage = lazy(() => import('./pages/ReportDetailPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const MapPage = lazy(() => import('./pages/MapPage'));
 const SafetyPage = lazy(() => import('./pages/SafetyPage'));
+const ExplorerPage = lazy(() => import('./pages/ExplorerPage'));
+const EmergencyPage = lazy(() => import('./pages/EmergencyPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 const LoadingSpinner = () => (
@@ -62,6 +64,8 @@ function App() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="map" element={<MapPage />} />
             <Route path="safety" element={<SafetyPage />} />
+            <Route path="explorer" element={<ExplorerPage />} />
+            <Route path="emergency" element={<EmergencyPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>
