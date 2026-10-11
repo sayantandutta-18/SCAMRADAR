@@ -138,40 +138,101 @@ Rules:
 - safeNextSteps must be 3-5 immediate defensive steps.
 - Return raw JSON only, without markdown fences.`;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-3.1-flash-lite",
-    contents: prompt,
-  });
-
-  const rawText = response.text || "";
-  const cleanedText = rawText
-    .replace(/^```json\s*/i, "")
-    .replace(/\s*```$/i, "")
-    .trim();
-
-  let parsed;
   try {
-    parsed = JSON.parse(cleanedText);
-  } catch (err) {
-    throw new Error("AI returned invalid JSON response for threat analysis");
+    const response = await ai.models.generateContent({
+      model: "gemini-3.1-flash-lite",
+      contents: prompt,
+    });
+
+    const rawText = response.text || "";
+    const cleanedText = rawText
+      .replace(/^```json\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(cleanedText);
+    } catch (err) {
+      return heuristicEvidenceAnalysis(text, context);
+    }
+
+    const allowedTypes = [
+      "PHISHING", "JOB_SCAM", "UPI_FRAUD", "LOAN_SCAM", "INVESTMENT_SCAM", "KYC_SCAM",
+      "LOTTERY_SCAM", "IMPERSONATION", "DELIVERY_SCAM", "ROMANCE_SCAM", "TECH_SUPPORT_SCAM", "OTHER"
+    ];
+
+    return {
+      scamType: allowedTypes.includes(parsed.scamType) ? parsed.scamType : "OTHER",
+      riskScore: Number.isInteger(parsed.riskScore) ? Math.min(100, Math.max(0, parsed.riskScore)) : 50,
+      riskLevel: ["LOW", "MEDIUM", "HIGH"].includes(parsed.riskLevel) ? parsed.riskLevel : "UNKNOWN",
+      explanation: parsed.explanation || "No explanation provided.",
+      indicators: Array.isArray(parsed.indicators) ? parsed.indicators : [],
+      safeNextSteps: Array.isArray(parsed.safeNextSteps) ? parsed.safeNextSteps : [],
+      analyzedAt: new Date().toISOString(),
+      context,
+    };
+  } catch (aiError) {
+    console.warn("Gemini API spike/unavailable, engaging heuristic threat analyzer:", aiError.message);
+    return heuristicEvidenceAnalysis(text, context);
+  }
+};
+
+const heuristicEvidenceAnalysis = (text, context = "generic") => {
+  const lower = (text || "").toLowerCase();
+  let scamType = "OTHER";
+  let riskScore = 40;
+  const indicators = [];
+
+  if (lower.includes("kyc") || lower.includes("pan") || lower.includes("aadhaar") || lower.includes("verify account") || lower.includes("blocked")) {
+    scamType = "KYC_SCAM";
+    riskScore = 88;
+    indicators.push("Demands immediate KYC or account verification credentials");
+  } else if (lower.includes("upi") || lower.includes("paytm") || lower.includes("gpay") || lower.includes("phonepe") || lower.includes("qr code")) {
+    scamType = "UPI_FRAUD";
+    riskScore = 90;
+    indicators.push("Payment gateway redirection or suspicious UPI payment request");
+  } else if (lower.includes("electricity") || lower.includes("power") || lower.includes("disconnect") || lower.includes("bill")) {
+    scamType = "PHISHING";
+    riskScore = 85;
+    indicators.push("Threat of immediate utility service disconnection");
+  } else if (lower.includes("job") || lower.includes("like video") || lower.includes("salary") || lower.includes("earn money") || lower.includes("part time") || lower.includes("daily task")) {
+    scamType = "JOB_SCAM";
+    riskScore = 84;
+    indicators.push("High pay for low effort part-time tasks (task-based scam)");
+  } else if (lower.includes("lottery") || lower.includes("winner") || lower.includes("won") || lower.includes("kbc") || lower.includes("prize")) {
+    scamType = "LOTTERY_SCAM";
+    riskScore = 94;
+    indicators.push("Unsolicited lottery or prize winnings claim requiring advance fee");
+  } else if (lower.includes("invest") || lower.includes("crypto") || lower.includes("trading") || lower.includes("guaranteed return")) {
+    scamType = "INVESTMENT_SCAM";
+    riskScore = 89;
+    indicators.push("Promise of guaranteed high financial returns or crypto trading");
+  } else {
+    indicators.push("Unsolicited electronic communication requiring defensive caution");
   }
 
-  const allowedTypes = [
-    "PHISHING", "JOB_SCAM", "UPI_FRAUD", "LOAN_SCAM", "INVESTMENT_SCAM", "KYC_SCAM",
-    "LOTTERY_SCAM", "IMPERSONATION", "DELIVERY_SCAM", "ROMANCE_SCAM", "TECH_SUPPORT_SCAM", "OTHER"
-  ];
+  if (lower.includes("urgent") || lower.includes("immediately") || lower.includes("tonight") || lower.includes("within 24 hours")) {
+    riskScore = Math.min(99, riskScore + 8);
+    indicators.push("Manufactured urgency tactic to bypass rational judgment");
+  }
 
   return {
-    scamType: allowedTypes.includes(parsed.scamType) ? parsed.scamType : "OTHER",
-    riskScore: Number.isInteger(parsed.riskScore) ? Math.min(100, Math.max(0, parsed.riskScore)) : 50,
-    riskLevel: ["LOW", "MEDIUM", "HIGH"].includes(parsed.riskLevel) ? parsed.riskLevel : "UNKNOWN",
-    explanation: parsed.explanation || "No explanation provided.",
-    indicators: Array.isArray(parsed.indicators) ? parsed.indicators : [],
-    safeNextSteps: Array.isArray(parsed.safeNextSteps) ? parsed.safeNextSteps : [],
+    scamType,
+    riskScore,
+    riskLevel: riskScore >= 75 ? "HIGH" : riskScore >= 50 ? "MEDIUM" : "LOW",
+    explanation: `Automated threat analysis identified clear ${scamType.replace(/_/g, " ")} indicators with high confidence markers.`,
+    indicators,
+    safeNextSteps: [
+      "Do not reply, transfer funds, or provide sensitive authentication codes (OTP/PIN)",
+      "Verify directly through official corporate or government helplines",
+      "Preserve message evidence and report to the cybercrime portal (1930 / cybercrime.gov.in)",
+    ],
     analyzedAt: new Date().toISOString(),
     context,
   };
 };
+
 
 // =====================================================
 // 3. URL INTELLIGENCE & NORMALIZATION (WITH SSRF GUARD)

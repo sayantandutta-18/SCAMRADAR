@@ -8,6 +8,18 @@ const api = axios.create({
   },
 });
 
+// Request interceptor to attach JWT token if available
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('scamradar_token') || sessionStorage.getItem('scamradar_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Response interceptor for consistent error handling
 api.interceptors.response.use(
   (response) => response,

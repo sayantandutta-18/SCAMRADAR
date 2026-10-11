@@ -6,6 +6,9 @@ const {
   getReportStats,
   getMapReports,
   verifyReportOnChain,
+  getTimeSeriesTrends,
+  getCategoryAnalytics,
+  getGeographicHotspots,
 } = require("../services/report.service");
 
 // ========================================
@@ -45,21 +48,7 @@ const createReportController = async (req, res) => {
 // ========================================
 const getReportsController = async (req, res) => {
   try {
-    const {
-      page = 1,
-      limit = 10,
-      scamType,
-      city,
-      state,
-    } = req.query;
-
-    const result = await getReports({
-      page,
-      limit,
-      scamType,
-      city,
-      state,
-    });
+    const result = await getReports(req.query);
 
     return res.status(200).json({
       success: true,
@@ -217,6 +206,65 @@ const verifyReportController = async (req, res) => {
 
 
 // ========================================
+// GET TIME-SERIES THREAT TRENDS
+// ========================================
+const getTimeSeriesTrendsController = async (req, res) => {
+  try {
+    const { interval, days } = req.query;
+    const data = await getTimeSeriesTrends({ interval, days });
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("Get trends error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch threat intelligence trends",
+    });
+  }
+};
+
+// ========================================
+// GET CATEGORY ANALYTICS
+// ========================================
+const getCategoryAnalyticsController = async (req, res) => {
+  try {
+    const data = await getCategoryAnalytics();
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("Get category analytics error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch category analytics",
+    });
+  }
+};
+
+// ========================================
+// GET GEOGRAPHIC HOTSPOTS
+// ========================================
+const getGeographicHotspotsController = async (req, res) => {
+  try {
+    const data = await getGeographicHotspots();
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("Get geographic hotspots error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch geographic threat hotspots",
+    });
+  }
+};
+
+// ========================================
 // EXPORT CONTROLLERS
 // ========================================
 module.exports = {
@@ -227,4 +275,7 @@ module.exports = {
   getReportStatsController,
   getMapReportsController,
   verifyReportController,
-};
+  getTimeSeriesTrendsController,
+  getCategoryAnalyticsController,
+  getGeographicHotspotsController,
+};

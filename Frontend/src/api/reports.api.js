@@ -7,12 +7,8 @@ export const createReport = async (reportData) => {
 };
 
 // Get all reports with pagination and filters
-export const getReports = async ({ page = 1, limit = 10, scamType, city, state } = {}) => {
-  const params = { page, limit };
-  if (scamType) params.scamType = scamType;
-  if (city) params.city = city;
-  if (state) params.state = state;
-  const response = await api.get('/reports', { params });
+export const getReports = async (filters = {}) => {
+  const response = await api.get('/reports', { params: filters });
   return response.data;
 };
 
@@ -64,3 +60,22 @@ export const verifyReportOnChain = async (id) => {
   const response = await api.get(`/reports/${id}/verify`);
   return response.data;
 };
+
+// Threat intelligence trends (daily/weekly/monthly time-series)
+export const getTimeSeriesTrends = async (params = {}) => {
+  const response = await api.get('/reports/trends', { params });
+  return response.data;
+};
+
+// Category deep-dive analytics
+export const getCategoryAnalytics = async () => {
+  const response = await api.get('/reports/category-analytics');
+  return response.data;
+};
+
+// Geographic threat hotspots
+export const getGeographicHotspots = async () => {
+  const response = await api.get('/reports/hotspots');
+  return response.data;
+};
+

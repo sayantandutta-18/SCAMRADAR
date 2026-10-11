@@ -114,6 +114,41 @@ const scamReportSchema = new mongoose.Schema(
       default: "PENDING",
     },
 
+    // Community Credibility & Independent Corroboration
+    credibility: {
+      score: {
+        type: Number,
+        default: 50,
+        min: 0,
+        max: 100,
+      },
+      level: {
+        type: String,
+        enum: ["UNVERIFIED", "MODERATE", "HIGH", "CORROBORATED"],
+        default: "UNVERIFIED",
+      },
+      corroborationCount: {
+        type: Number,
+        default: 1,
+      },
+      moderationStatus: {
+        type: String,
+        enum: ["UNREVIEWED", "VERIFIED_ACCURATE", "DISPUTED", "FLAGGED_INACCURATE"],
+        default: "UNREVIEWED",
+      },
+      moderatedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      moderatedAt: {
+        type: Date,
+      },
+      moderationNotes: {
+        type: String,
+        trim: true,
+      },
+    },
+
     // User who submitted the report
     reporter: {
       type: mongoose.Schema.Types.ObjectId,

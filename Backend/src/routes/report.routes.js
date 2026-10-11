@@ -8,7 +8,12 @@ const {
   getReportStatsController,
   getMapReportsController,
   verifyReportController,
+  getTimeSeriesTrendsController,
+  getCategoryAnalyticsController,
+  getGeographicHotspotsController,
 } = require("../controllers/report.controller");
+const moderationController = require("../controllers/moderation.controller");
+const { optionalAuth } = require("../middleware/auth.middleware");
 
 const {
   createReportSchema,
@@ -68,6 +73,36 @@ router.get(
 
 
 // ================================
+// THREAT INTELLIGENCE TRENDS
+// GET /api/reports/trends
+// ================================
+router.get(
+  "/trends",
+  getTimeSeriesTrendsController
+);
+
+
+// ================================
+// CATEGORY ANALYTICS
+// GET /api/reports/category-analytics
+// ================================
+router.get(
+  "/category-analytics",
+  getCategoryAnalyticsController
+);
+
+
+// ================================
+// GEOGRAPHIC THREAT HOTSPOTS
+// GET /api/reports/hotspots
+// ================================
+router.get(
+  "/hotspots",
+  getGeographicHotspotsController
+);
+
+
+// ================================
 // MAP REPORTS
 // GET /api/reports/map
 // IMPORTANT: MUST COME BEFORE /:id
@@ -76,6 +111,7 @@ router.get(
   "/map",
   getMapReportsController
 );
+
 
 
 // ================================
@@ -95,6 +131,17 @@ router.get(
 
 
 // ================================
+// DISPUTE REPORT
+// POST /api/reports/:id/dispute
+// ================================
+router.post(
+  "/:id/dispute",
+  optionalAuth,
+  moderationController.fileDispute
+);
+
+
+// ================================
 // GET REPORT BY ID
 // GET /api/reports/:id
 // ================================
@@ -102,6 +149,7 @@ router.get(
   "/:id",
   getReportByIdController
 );
+
 
 
 // ================================

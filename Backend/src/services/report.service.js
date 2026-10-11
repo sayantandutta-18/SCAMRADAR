@@ -142,17 +142,23 @@ const createReport = async (reportData) => {
 
 
 // =====================================================
-// GET ALL SCAM REPORTS
+// GET ALL SCAM REPORTS (WITH ADVANCED MULTI-PARAMETER FILTERS)
 // =====================================================
 
 const getReports = async (filters = {}) => {
-
   const {
     page = 1,
     limit = 10,
     scamType,
     city,
     state,
+    riskLevel,
+    minRisk,
+    search,
+    startDate,
+    endDate,
+    moderationStatus,
+    status,
   } = filters;
 
   const query = {};
@@ -162,18 +168,49 @@ const getReports = async (filters = {}) => {
   }
 
   if (city) {
-    query["location.city"] = city;
+    query["location.city"] = new RegExp(`^${city}$`, "i");
   }
 
   if (state) {
-    query["location.state"] = state;
+    query["location.state"] = new RegExp(`^${state}$`, "i");
   }
 
-  const skip = (page - 1) * limit;
+  if (riskLevel) {
+    query.riskLevel = riskLevel.toUpperCase();
+  }
+
+  if (minRisk) {
+    query.riskScore = { $gte: Number(minRisk) };
+  }
+
+  if (moderationStatus) {
+    query["credibility.moderationStatus"] = moderationStatus;
+  }
+
+  if (status) {
+    query.status = status;
+  }
+
+  if (startDate || endDate) {
+    query.createdAt = {};
+    if (startDate) query.createdAt.$gte = new Date(startDate);
+    if (endDate) query.createdAt.$lte = new Date(endDate);
+  }
+
+  if (search && search.trim()) {
+    const s = search.trim();
+    query.$or = [
+      { title: { $regex: s, $options: "i" } },
+      { message: { $regex: s, $options: "i" } },
+      { identifier: { $regex: s, $options: "i" } },
+      { "location.city": { $regex: s, $options: "i" } },
+    ];
+  }
+
+  const skip = (Math.max(1, page) - 1) * Number(limit);
 
   const [reports, total] = await Promise.all([
-    ScamReport
-      .find(query)
+    ScamReport.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(Number(limit)),
@@ -186,7 +223,7 @@ const getReports = async (filters = {}) => {
     total,
     page: Number(page),
     limit: Number(limit),
-    totalPages: Math.ceil(total / Number(limit)),
+    totalPages: Math.ceil(total / Number(limit)) || 1,
   };
 };
 
@@ -440,6 +477,127 @@ const verifyReportOnChain = async (reportId) => {
 };
 
 
+// =====================================================
+// TIME-SERIES TRENDS (REAL DATABASE AGGREGATION)
+// =====================================================
+
+const getTimeSeriesTrends = async ({ interval = "day", days = 30 } = {}) => {
+  const daysNum = Math.min(365, Math.max(7, Number(days) || 30));
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - daysNum);
+
+  let dateFormat = "%Y-%m-%d";
+  if (interval === "month") {
+    dateFormat = "%Y-%m";
+  } else if (interval === "week") {
+    dateFormat = "%Y-W%V";
+  }
+
+  const trends = await ScamReport.aggregate([
+    {
+      $match: {
+        createdAt: { $gte: startDate },
+      },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: dateFormat, date: "$createdAt" } },
+        totalReports: { $sum: 1 },
+        highRiskCount: {
+          $sum: { $cond: [{ $eq: ["$riskLevel", "HIGH"] }, 1, 0] },
+        },
+        avgRiskScore: { $avg: "$riskScore" },
+      },
+    },
+    {
+      $sort: { _id: 1 },
+    },
+  ]);
+
+  return {
+    interval,
+    days: daysNum,
+    startDate,
+    trends: trends.map((t) => ({
+      date: t._id,
+      totalReports: t.totalReports,
+      highRiskCount: t.highRiskCount,
+      avgRiskScore: Math.round(t.avgRiskScore || 0),
+    })),
+  };
+};
+
+// =====================================================
+// CATEGORY DEEP-DIVE ANALYTICS
+// =====================================================
+
+const getCategoryAnalytics = async () => {
+  const analytics = await ScamReport.aggregate([
+    {
+      $group: {
+        _id: "$scamType",
+        count: { $sum: 1 },
+        avgRiskScore: { $avg: "$riskScore" },
+        highRiskCount: {
+          $sum: { $cond: [{ $eq: ["$riskLevel", "HIGH"] }, 1, 0] },
+        },
+      },
+    },
+    {
+      $sort: { count: -1 },
+    },
+  ]);
+
+  const total = analytics.reduce((acc, curr) => acc + curr.count, 0);
+
+  return analytics.map((cat) => ({
+    category: cat._id,
+    count: cat.count,
+    percentage: total > 0 ? Math.round((cat.count / total) * 100) : 0,
+    avgRiskScore: Math.round(cat.avgRiskScore || 0),
+    highRiskCount: cat.highRiskCount,
+  }));
+};
+
+// =====================================================
+// GEOGRAPHIC THREAT HOTSPOTS
+// =====================================================
+
+const getGeographicHotspots = async () => {
+  const hotspots = await ScamReport.aggregate([
+    {
+      $match: {
+        "location.city": { $exists: true, $ne: "" },
+      },
+    },
+    {
+      $group: {
+        _id: "$location.city",
+        state: { $first: "$location.state" },
+        latitude: { $first: "$location.latitude" },
+        longitude: { $first: "$location.longitude" },
+        count: { $sum: 1 },
+        avgRiskScore: { $avg: "$riskScore" },
+      },
+    },
+    {
+      $sort: { count: -1 },
+    },
+    {
+      $limit: 15,
+    },
+  ]);
+
+  return hotspots.map((h) => ({
+    city: h._id,
+    state: h.state,
+    latitude: h.latitude,
+    longitude: h.longitude,
+    count: h.count,
+    avgRiskScore: Math.round(h.avgRiskScore || 0),
+  }));
+};
+
 module.exports = {
   createReport,
   getReports,
@@ -448,4 +606,7 @@ module.exports = {
   getReportStats,
   getMapReports,
   verifyReportOnChain,
-};
+  getTimeSeriesTrends,
+  getCategoryAnalytics,
+  getGeographicHotspots,
+};

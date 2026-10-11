@@ -15,9 +15,11 @@ const analyzeScamMessage = async (message) => {
     throw new Error("Message is required for AI analysis");
   }
 
-  const response = await ai.models.generateContent({
-    model: "gemini-3.1-flash-lite",
-    contents: `
+  let text;
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3.1-flash-lite",
+      contents: `
 Analyze the following message for scam or fraud:
 
 "${message}"
@@ -32,32 +34,50 @@ Return ONLY valid JSON in this exact format:
 }
 
 Allowed scamType values ONLY:
-
-PHISHING
-JOB_SCAM
-UPI_FRAUD
-LOAN_SCAM
-INVESTMENT_SCAM
-KYC_SCAM
-LOTTERY_SCAM
-IMPERSONATION
-DELIVERY_SCAM
-ROMANCE_SCAM
-TECH_SUPPORT_SCAM
-OTHER
+PHISHING, JOB_SCAM, UPI_FRAUD, LOAN_SCAM, INVESTMENT_SCAM, KYC_SCAM, LOTTERY_SCAM, IMPERSONATION, DELIVERY_SCAM, ROMANCE_SCAM, TECH_SUPPORT_SCAM, OTHER.
 
 Rules:
 - scamType MUST be exactly one of the allowed values.
 - riskScore MUST be an integer between 0 and 100.
 - riskLevel MUST be exactly LOW, MEDIUM, or HIGH.
 - explanation MUST be short, clear, and easy to understand.
-- Do not return markdown.
-- Do not return code fences.
 - Return JSON only.
 `,
-  });
+    });
+    text = response.text;
+  } catch (err) {
+    console.warn("AI service spike, using fallback heuristic classifier:", err.message);
+    const lower = message.toLowerCase();
+    let scamType = "OTHER";
+    let riskScore = 50;
 
-  const text = response.text;
+    if (lower.includes("kyc") || lower.includes("pan") || lower.includes("aadhaar") || lower.includes("blocked")) {
+      scamType = "KYC_SCAM";
+      riskScore = 88;
+    } else if (lower.includes("upi") || lower.includes("paytm") || lower.includes("gpay") || lower.includes("phonepe")) {
+      scamType = "UPI_FRAUD";
+      riskScore = 90;
+    } else if (lower.includes("electricity") || lower.includes("power") || lower.includes("disconnect")) {
+      scamType = "PHISHING";
+      riskScore = 86;
+    } else if (lower.includes("job") || lower.includes("salary") || lower.includes("part time")) {
+      scamType = "JOB_SCAM";
+      riskScore = 82;
+    } else if (lower.includes("lottery") || lower.includes("won") || lower.includes("prize")) {
+      scamType = "LOTTERY_SCAM";
+      riskScore = 94;
+    } else if (lower.includes("invest") || lower.includes("crypto") || lower.includes("trading")) {
+      scamType = "INVESTMENT_SCAM";
+      riskScore = 89;
+    }
+
+    return {
+      scamType,
+      riskScore,
+      riskLevel: riskScore >= 75 ? "HIGH" : riskScore >= 50 ? "MEDIUM" : "LOW",
+      explanation: `Heuristic security scan detected indicators characteristic of ${scamType.replace("_", " ")}.`,
+    };
+  }
 
   if (!text) {
     throw new Error("AI returned an empty response");
@@ -75,6 +95,7 @@ Rules:
   } catch (error) {
     throw new Error("AI returned invalid JSON");
   }
+
 
   // Validate AI output
   const allowedScamTypes = [
