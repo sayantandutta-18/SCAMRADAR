@@ -14,6 +14,9 @@ const MapPage = lazy(() => import('./pages/MapPage'));
 const SafetyPage = lazy(() => import('./pages/SafetyPage'));
 const ExplorerPage = lazy(() => import('./pages/ExplorerPage'));
 const EmergencyPage = lazy(() => import('./pages/EmergencyPage'));
+const ScannerPage = lazy(() => import('./pages/ScannerPage'));
+const UrlEmailIntelPage = lazy(() => import('./pages/UrlEmailIntelPage'));
+const PatternGraphPage = lazy(() => import('./pages/PatternGraphPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 const LoadingSpinner = () => (
@@ -66,6 +69,9 @@ function App() {
             <Route path="safety" element={<SafetyPage />} />
             <Route path="explorer" element={<ExplorerPage />} />
             <Route path="emergency" element={<EmergencyPage />} />
+            <Route path="scanner" element={<ScannerPage />} />
+            <Route path="intelligence/url-email" element={<UrlEmailIntelPage />} />
+            <Route path="intelligence/patterns" element={<PatternGraphPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

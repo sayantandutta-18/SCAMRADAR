@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Shield, Menu, X, Home, Search, AlertOctagon, LayoutDashboard, Globe, ShieldAlert, Database, LifeBuoy } from 'lucide-react';
+import { Shield, Menu, X, Home, Search, AlertOctagon, LayoutDashboard, Globe, ShieldAlert, Database, LifeBuoy, Scan, Network } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const navLinks = [
   { name: 'Home', path: '/', icon: Home },
-  { name: 'Check Scam', path: '/check', icon: Search },
-  { name: 'Report Scam', path: '/report', icon: AlertOctagon },
+  { name: 'Verify', path: '/check', icon: Search },
+  { name: 'Scanner', path: '/scanner', icon: Scan, badge: 'OCR' },
   { name: 'Threat Map', path: '/map', icon: Globe, badge: '3D' },
-  { name: 'Intelligence', path: '/dashboard', icon: LayoutDashboard },
-  { name: 'Proof Explorer', path: '/explorer', icon: Database, badge: 'On-Chain' },
-  { name: 'Safety Center', path: '/safety', icon: ShieldAlert },
+  { name: 'Patterns', path: '/intelligence/patterns', icon: Network },
+  { name: 'URL/Email', path: '/intelligence/url-email', icon: LayoutDashboard },
+  { name: 'Explorer', path: '/explorer', icon: Database, badge: 'On-Chain' },
+  { name: 'Safety', path: '/safety', icon: ShieldAlert },
   { name: 'Emergency', path: '/emergency', icon: LifeBuoy, highlight: true },
 ];
 
