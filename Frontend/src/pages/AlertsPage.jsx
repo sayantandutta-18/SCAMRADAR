@@ -244,8 +244,9 @@ const AlertsPage = () => {
         >
           <span>{feedback.text}</span>
           <button
+            type="button"
             onClick={() => setFeedback(null)}
-            className="text-xs opacity-75 hover:opacity-100"
+            className="text-xs opacity-75 hover:opacity-100 cursor-pointer"
           >
             ✕
           </button>
@@ -260,8 +261,9 @@ const AlertsPage = () => {
               <Sliders className="w-4 h-4 text-teal-400" /> Alert Trigger Rules & Preferences
             </h2>
             <button
+              type="button"
               onClick={() => setShowPreferences(false)}
-              className="text-xs text-slate-400 hover:text-slate-200"
+              className="text-xs text-slate-400 hover:text-slate-200 cursor-pointer"
             >
               Close
             </button>
@@ -447,9 +449,10 @@ const AlertsPage = () => {
             ScamRadar scans database incidents against your configured category and risk preferences.
           </p>
           <button
+            type="button"
             onClick={handleSyncAlerts}
             disabled={syncing}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-teal-400 font-semibold text-xs rounded-xl border border-slate-700 transition-all inline-flex items-center gap-2"
+            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-teal-400 font-semibold text-xs rounded-xl border border-slate-700 transition-all inline-flex items-center gap-2 cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} /> Scan Database Now
           </button>

@@ -25,6 +25,7 @@ const EmptyState = ({
       
       {actionLabel && onAction && (
         <button
+          type="button"
           onClick={onAction}
           className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-xl transition-all font-medium text-sm shadow-lg shadow-blue-500/20 active:scale-95 cursor-pointer"
         >

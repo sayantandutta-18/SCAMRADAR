@@ -13,6 +13,8 @@ import {
 import { getScamPatternGraph } from '../api/intelligence.api';
 import { useApi } from '../hooks/useApi';
 import BackButton from '../components/common/BackButton';
+import ErrorState from '../components/common/ErrorState';
+import EmptyState from '../components/common/EmptyState';
 import { getRiskColorClass } from '../utils/formatters';
 
 const SCAM_TYPES = [
@@ -272,23 +274,29 @@ const PatternGraphPage = () => {
         {/* Right: Zoom & Reset Controls */}
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() => setZoom((z) => Math.min(2.5, z + 0.2))}
-            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300"
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 cursor-pointer"
             title="Zoom In"
+            aria-label="Zoom In"
           >
             <ZoomIn className="w-4 h-4" />
           </button>
           <button
+            type="button"
             onClick={() => setZoom((z) => Math.max(0.5, z - 0.2))}
-            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300"
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 cursor-pointer"
             title="Zoom Out"
+            aria-label="Zoom Out"
           >
             <ZoomOut className="w-4 h-4" />
           </button>
           <button
+            type="button"
             onClick={handleResetView}
-            className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs flex items-center gap-1"
+            className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs flex items-center gap-1 cursor-pointer"
             title="Reset View"
+            aria-label="Reset View"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset</span>
@@ -302,6 +310,30 @@ const PatternGraphPage = () => {
           <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-30 flex flex-col items-center justify-center gap-3">
             <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin" />
             <span className="text-xs font-mono text-cyan-300">Computing Pattern Corroborations & Clustering...</span>
+          </div>
+        )}
+
+        {error && (
+          <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-30 flex items-center justify-center p-6">
+            <div className="max-w-md w-full">
+              <ErrorState
+                title="Pattern Correlation Unavailable"
+                message={error.message || "Failed to load scam pattern intelligence graph."}
+                onRetry={fetchGraph}
+              />
+            </div>
+          </div>
+        )}
+
+        {!loading && !error && nodes.length === 0 && (
+          <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-30 flex items-center justify-center p-6">
+            <div className="max-w-md w-full">
+              <EmptyState
+                icon={Network}
+                title="No Pattern Nodes Discovered"
+                message="No incident correlation clusters found matching your filter criteria. Try selecting 'ALL' categories or clearing city filters."
+              />
+            </div>
           </div>
         )}
 

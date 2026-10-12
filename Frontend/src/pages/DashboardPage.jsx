@@ -57,7 +57,7 @@ const DashboardPage = () => {
 
   // Filters state
   const [trendInterval, setTrendInterval] = useState('day');
-  const [trendDays, setTrendDays] = useState(30);
+  const [trendDays, setTrendDays] = useState(90);
   const [filterRiskLevel, setFilterRiskLevel] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
 
@@ -139,6 +139,16 @@ const DashboardPage = () => {
       </div>
 
       {/* Top Stat Cards */}
+      {error && !stats && (
+        <div className="mb-8">
+          <ErrorState
+            title="Analytics Telemetry Feed Unavailable"
+            message={typeof error === 'string' ? error : (error?.message || "Failed to synchronize threat intelligence metrics. Please verify server connection.")}
+            onRetry={fetchDashboardData}
+          />
+        </div>
+      )}
+
       {loading && !stats ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           {[...Array(4)].map((_, i) => (

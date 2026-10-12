@@ -579,9 +579,10 @@ const VaultPage = () => {
             <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
               {['', 'OPEN', 'UNDER_REVIEW', 'SUBMITTED_TO_AUTHORITIES', 'RESOLVED'].map((st) => (
                 <button
+                  type="button"
                   key={st}
                   onClick={() => setFilterStatus(st)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
                     filterStatus === st
                       ? 'bg-teal-500/20 text-teal-400 border border-teal-500/30'
                       : 'text-slate-400 hover:text-slate-200'
@@ -621,8 +622,9 @@ const VaultPage = () => {
                 Create a private incident dossier to securely track fraud evidence, timeline milestones, and bank disputes.
               </p>
               <button
+                type="button"
                 onClick={() => setShowCreateModal(true)}
-                className="px-4 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-teal-500/20 transition-all inline-flex items-center gap-2"
+                className="px-4 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-teal-500/20 transition-all inline-flex items-center gap-2 cursor-pointer"
               >
                 <Plus className="w-4 h-4" /> Create First Dossier
               </button>
