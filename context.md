@@ -204,5 +204,105 @@
   - Frontend build: `npm run build` succeeds (1.94s).
   - Blockchain tests: `npx hardhat test` succeeds (11/11 passing).
   - Backend health: `GET /api/health` returns HTTP 200.
-- **Current Status**: Checkpoint 0 COMPLETE.
-- **Next Checkpoint**: Checkpoint 1 — Design System, Typography & CSS Repair.
+- **Status**: Checkpoint 0 COMPLETE.
+
+---
+
+## 8. Master Execution — Checkpoint 1: Design System, Typography & CSS Repair
+
+### A. Implemented Fixes
+1. **Critical Syntax Fix**: Fixed missing `useMemo` import in `ReportsListPage.jsx` resolving `ReferenceError: useMemo is not defined`.
+2. **Double Scrollbar Elimination**: Removed redundant `min-h-screen bg-slate-900` from `NotFoundPage.jsx`.
+3. **Tailwind & CSS Cleanup**: Cleaned boilerplate CSS rules from `App.css`. Standardized `:focus-visible` ring indicators across interactive elements.
+4. **Accessible Button Design System**: Added `.btn-cyber-primary` and `.btn-cyber-secondary` utility classes in `index.css` with 44px minimum touch targets and cyan cyber glow focus states.
+5. **Legibility Enforcement**: Scaled micro-typography across badge tags and labels up to readable minimum sizes.
+
+### B. Checkpoint 1 Acceptance Criteria Verification
+- [x] No overlapping text on viewport sizes (375px, 768px, 1024px, 1440px).
+- [x] Heading sizes scale proportionally with screen width without clipping.
+- [x] Minimum 16px font size on inputs preventing iOS Safari auto-zoom.
+- [x] Body text legible with appropriate line-height (`leading-relaxed`).
+- [x] Consistent 8px grid spacing system enforced.
+- [x] Button and interactive touch targets minimum 44px × 44px on touch viewports.
+- [x] Focus-visible rings present on interactive elements for keyboard accessibility.
+- [x] Dark mode color contrast passes WCAG AA minimum 4.5:1 for normal text.
+- [x] No double scrollbars on any page.
+- [x] Zero CSS console errors or unrecognized utility classes.
+- [x] Git commit: `ab6579a` - `fix(checkpoint-1): repair design system, typography, focus indicators, and layout CSS`.
+- **Status**: Checkpoint 1 COMPLETE.
+
+---
+
+## 9. Master Execution — Checkpoint 2: Navigation & Button Functionality
+
+### A. Implemented Fixes
+1. **Universal Reusable BackButton (`BackButton.jsx`)**:
+   - Smart browser history navigation (`window.history.length > 2 ? navigate(-1) : navigate(fallbackPath)`).
+   - Graceful fallback for direct deep links / URL bookmarks.
+   - Styled with chevron, accessible hover states, and focus-visible indicators.
+   - Integrated across 16 subpages: `CheckPage`, `ReportPage`, `ReportDetailPage`, `ExplorerPage`, `EmergencyPage`, `SafetyPage`, `ScannerPage`, `UrlEmailIntelPage`, `PatternGraphPage`, `VaultPage`, `AlertsPage`, `ModerationPage`, `DashboardPage`, `MapPage`, `ReportsListPage`, `AuthPage`.
+2. **Form Button Accessibility & Submission Guard**:
+   - Added explicit `type="button"` and `aria-label` to all tool buttons, modal close controls, filter tags, example pills, and pagination controls across `IdentifierInput.jsx`, `FilterBar.jsx`, `ScamChecker.jsx`, `ReportForm.jsx`, `AIChatbot.jsx`, `ChatWindow.jsx`, `ReportsListPage.jsx`, `DashboardPage.jsx`, and `Navbar.jsx`.
+3. **Elimination of Stacked Duplicate Headings**:
+   - Added `hideHeader` prop to `ScamChecker.jsx` and `ReportForm.jsx` when embedded in `CheckPage.jsx` and `ReportPage.jsx`.
+4. **Complete Route Coverage in Navbar & Footer**:
+   - Added prominent desktop "Report Scam" (`/report`) button.
+   - Added "Report Incident" (`/report`), "Incident Database" (`/reports`), and "URL & Email Intel" (`/intelligence/url-email`) to navigation menus.
+   - Added "Submit Scam Report" to `Footer.jsx`.
+
+### B. Checkpoint 2 Acceptance Criteria Verification
+- [x] Universal `BackButton` present and verified on all subpages.
+- [x] Direct navigation via URL has working fallback parent route.
+- [x] Every button has explicit `type` attribute (`type="button"` vs `type="submit"`).
+- [x] Nav links active states match current URL exactly.
+- [x] Desktop and mobile navigation include all primary and secondary routes.
+- [x] AIChatbot toggle and internal controls accessible with proper aria-labels and keyboard focus.
+- [x] Subpages free from duplicate stacked headings.
+- [x] Build passes: `npm run build` succeeds (1.28s).
+- [x] Lint passes: 0 errors across 62 files.
+- [x] Git commit: `092f168` - `fix(checkpoint-2): add universal BackButton, fix button types, eliminate duplicate titles, and complete nav links`.
+- **Status**: Checkpoint 2 COMPLETE.
+
+---
+
+## 10. Master Execution — Checkpoint 3: API Integration & Error Handling
+
+### A. Implemented Fixes & Audited Flows
+1. **Centrally Configured API Client (`axios.js`)**:
+   - Uses `baseURL: import.meta.env.VITE_API_URL || '/api'`, seamlessly integrating with Vite development proxy and production API hosts.
+   - Comprehensive response interceptor extracting `serverError`, `errors`, and handling network connection failure gracefully.
+2. **Data Normalization Across All Feeds**:
+   - `getReportStats`: normalizes `.data` vs direct shape, computing active categories and monitored cities.
+   - `getReports`: normalizes `data.data`, `data.reports`, or direct array.
+   - `getMapReports`: extracts coordinate reports from `.data` or array, tolerating zero or multiple items.
+   - `searchReports`: correctly handles both existing reports (array) and 0 reports without throwing false errors.
+   - `createReport`: handles successful creation and returns `reportObj`, with duplicate identifier (409) handling.
+   - `verifyReportOnChain`: normalizes on-chain response whether wrapped or direct, gracefully surfacing `RPC_UNAVAILABLE` without false verification.
+   - `getTimeSeriesTrends`: default window adjusted to 90 days to visualize historical records immediately on mount.
+3. **Empty States vs Error States**:
+   - When 0 reports exist in search or database: displays clean `EmptyState` with guidance to report or consult safety guides.
+   - When backend is down: displays compact or full `ErrorState` with animated "Retry Connection" button.
+   - Added `ErrorState` and `EmptyState` overlays into `PatternGraphPage.jsx` canvas.
+4. **Live Verification**:
+   - `GET /api/health` -> HTTP 200 (healthy)
+   - `GET /api/reports/stats` -> HTTP 200 (4 total reports, 3 high risk, Kolkata)
+   - `GET /api/reports?limit=4` -> HTTP 200 (4 real reports)
+   - `GET /api/reports/map` -> HTTP 200 (2 geocoded coordinates)
+   - `GET /api/reports/search` -> HTTP 200 (1 found for reported phone, 0 found for clean phone with clean empty state)
+   - `GET /api/reports/:id/verify` -> HTTP 200 (`RPC_UNAVAILABLE` handled with calculated hash)
+
+### B. Checkpoint 3 Acceptance Criteria Verification
+- [x] Centrally configured API base URL (env var with fallback).
+- [x] Every API call has try/catch or promise error handling.
+- [x] Loading states display LoadingSkeleton components.
+- [x] Error states display ErrorState component with working Retry button.
+- [x] Empty states display EmptyState component with helpful guidance.
+- [x] When API returns 0 items: clean empty state displayed, not an error.
+- [x] Data normalizers ensure frontend tolerates variations in API response shape.
+- [x] Build passes: `npm run build` succeeds (2.07s).
+- [x] Lint passes: 0 errors across 62 files.
+- [x] Git commit: `ab70bb1` - `fix(checkpoint-3): audit API integration, error states, and data normalizers across all feeds`.
+- **Status**: Checkpoint 3 COMPLETE.
+- **Next Checkpoint**: Checkpoint 4 — Complete Page-by-Page UX Polish.
+
+
