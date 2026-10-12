@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
+import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import {
@@ -303,6 +303,33 @@ function SceneContent({
     </group>
   );
 }
+ 
+// Camera and OrbitControls synchronizer
+function CameraController({ cameraDistance, resetKey, defaultDistance, controlsRef }) {
+  const { camera } = useThree();
+  const prevDistance = useRef(cameraDistance);
+  const prevResetKey = useRef(resetKey);
+
+  useEffect(() => {
+    if (prevResetKey.current !== resetKey) {
+      prevResetKey.current = resetKey;
+      if (camera) {
+        camera.position.set(0, 0, defaultDistance);
+        camera.lookAt(0, 0, 0);
+        camera.updateProjectionMatrix();
+      }
+      if (controlsRef?.current) {
+        controlsRef.current.reset?.();
+      }
+    } else if (prevDistance.current !== cameraDistance && camera) {
+      camera.position.normalize().multiplyScalar(cameraDistance);
+      camera.updateProjectionMatrix();
+      prevDistance.current = cameraDistance;
+    }
+  }, [cameraDistance, resetKey, defaultDistance, camera, controlsRef]);
+
+  return null;
+}
 
 export default function CyberGlobeCanvas({
   reports = [],
@@ -312,7 +339,10 @@ export default function CyberGlobeCanvas({
   enableZoom = true,
   cameraDistance = 4.8,
   globeRadius = 1.9,
+  resetKey = 0,
+  defaultDistance = 4.8,
 }) {
+  const controlsRef = useRef(null);
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -321,7 +351,7 @@ export default function CyberGlobeCanvas({
 
   return (
     <Canvas
-      camera={{ position: [0, 0, cameraDistance], fov: 45 }}
+      camera={{ position: [0, 0, defaultDistance], fov: 45 }}
       dpr={[1, 1.5]}
       gl={{
         antialias: true,
@@ -336,6 +366,13 @@ export default function CyberGlobeCanvas({
       <directionalLight position={[5, 3, 5]} color="#22d3ee" intensity={1.3} />
       <directionalLight position={[-5, -2, -3]} color="#3b82f6" intensity={0.7} />
 
+      <CameraController
+        cameraDistance={cameraDistance}
+        resetKey={resetKey}
+        defaultDistance={defaultDistance}
+        controlsRef={controlsRef}
+      />
+
       <SceneContent
         reports={reports}
         selectedReport={selectedReport}
@@ -344,6 +381,7 @@ export default function CyberGlobeCanvas({
       />
 
       <OrbitControls
+        ref={controlsRef}
         enablePan={false}
         enableZoom={enableZoom}
         minDistance={globeRadius * 1.3}

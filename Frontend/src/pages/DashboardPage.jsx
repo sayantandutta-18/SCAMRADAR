@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -24,8 +17,6 @@ import {
   RefreshCw,
   Layers,
   TrendingUp,
-  Filter,
-  Calendar,
   Compass,
 } from 'lucide-react';
 import {
@@ -44,6 +35,22 @@ import BackButton from '../components/common/BackButton';
 import { SCAM_TYPES } from '../constants/scamTypes';
 
 const COLORS = ['#06b6d4', '#3b82f6', '#f59e0b', '#ef4444', '#10b981', '#8b5cf6', '#ec4899', '#f97316'];
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-slate-950/95 border border-slate-700 p-3 rounded-xl shadow-2xl backdrop-blur-md text-xs">
+        <p className="text-slate-300 font-bold mb-1">{label || payload[0].name}</p>
+        {payload.map((entry, idx) => (
+          <p key={idx} style={{ color: entry.color || '#06b6d4' }} className="font-semibold">
+            {`${entry.name}: ${entry.value}`}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
 
 const DashboardPage = () => {
   const [stats, setStats] = useState(null);
@@ -93,23 +100,6 @@ const DashboardPage = () => {
   useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
-
-
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-slate-950/95 border border-slate-700 p-3 rounded-xl shadow-2xl backdrop-blur-md text-xs">
-          <p className="text-slate-300 font-bold mb-1">{label || payload[0].name}</p>
-          {payload.map((entry, idx) => (
-            <p key={idx} style={{ color: entry.color || '#06b6d4' }} className="font-semibold">
-              {`${entry.name}: ${entry.value}`}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">

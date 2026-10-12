@@ -62,7 +62,9 @@ export default function CyberThreatGlobe({
 }) {
   const [hasWebGL] = useState(() => isWebGLSupported());
   const [autoRotate, setAutoRotate] = useState(true);
-  const [cameraDistance, setCameraDistance] = useState(compact ? 4.8 : 4.4);
+  const defaultDistance = compact ? 4.8 : 4.4;
+  const [cameraDistance, setCameraDistance] = useState(defaultDistance);
+  const [resetKey, setResetKey] = useState(0);
 
   if (!hasWebGL) {
     return (
@@ -108,6 +110,8 @@ export default function CyberThreatGlobe({
           onSelectReport={onSelectReport}
           autoRotate={autoRotate}
           cameraDistance={cameraDistance}
+          defaultDistance={defaultDistance}
+          resetKey={resetKey}
           globeRadius={compact ? 1.75 : 1.9}
         />
       </Suspense>
@@ -192,8 +196,9 @@ export default function CyberThreatGlobe({
           <button
             type="button"
             onClick={() => {
-              setCameraDistance(compact ? 4.8 : 4.4);
+              setCameraDistance(defaultDistance);
               setAutoRotate(true);
+              setResetKey((k) => k + 1);
             }}
             className="p-1.5 rounded-lg hover:bg-white/10 text-slate-300 hover:text-cyan-300 transition-colors cursor-pointer"
             title="Reset View"
