@@ -261,9 +261,14 @@ const ReportForm = ({ hideHeader = false }) => {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-          Incident Description * (min 5 chars)
-        </label>
+        <div className="flex justify-between items-center">
+          <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+            Incident Description *
+          </label>
+          <span className={`text-[11px] font-mono ${formData.message.trim().length >= 5 ? 'text-slate-400' : 'text-amber-400'}`}>
+            {formData.message.trim().length} chars (min 5)
+          </span>
+        </div>
         <textarea
           value={formData.message}
           onChange={(e) => {

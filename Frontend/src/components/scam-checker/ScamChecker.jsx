@@ -1,24 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import IdentifierInput from './IdentifierInput';
 import RiskResult from './RiskResult';
 import { useApi } from '../../hooks/useApi';
 import { searchReports } from '../../api/reports.api';
 import { IDENTIFIER_TYPES } from '../../constants/scamTypes';
+import { detectIdentifierType } from '../../utils/identifierDetector';
 import { Shield, AlertCircle } from 'lucide-react';
 
 const ScamChecker = ({ hideHeader = false }) => {
-  const [identifier, setIdentifier] = useState('');
-  const [identifierType, setIdentifierType] = useState(IDENTIFIER_TYPES.PHONE);
+  const [searchParams] = useSearchParams();
+  const initialQuery = searchParams.get('q') || searchParams.get('identifier') || '';
+
+  const [identifier, setIdentifier] = useState(initialQuery);
+  const [identifierType, setIdentifierType] = useState(() => {
+    return (initialQuery ? detectIdentifierType(initialQuery) : null) || IDENTIFIER_TYPES.PHONE;
+  });
   const [results, setResults] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
 
   const { execute: search, loading, error, data } = useApi(searchReports);
 
-  const handleSearch = async () => {
-    if (!identifier.trim()) return;
+  const handleSearch = async (overrideIdentifier, overrideType) => {
+    const idToSearch = (overrideIdentifier !== undefined ? overrideIdentifier : identifier).trim();
+    const typeToSearch = overrideType || identifierType;
+    if (!idToSearch) return;
+
     setHasSearched(true);
     try {
-      const response = await search({ identifier, identifierType });
+      const response = await search({ identifier: idToSearch, identifierType: typeToSearch });
       const reports = Array.isArray(response?.data)
         ? response.data
         : (response?.data?.reports || response?.reports || (Array.isArray(response) ? response : []));
@@ -27,6 +37,16 @@ const ScamChecker = ({ hideHeader = false }) => {
       console.error('Search failed:', err);
     }
   };
+
+  // Auto-search if mounted with initial query parameter
+  useEffect(() => {
+    if (initialQuery) {
+      const detected = detectIdentifierType(initialQuery) || IDENTIFIER_TYPES.PHONE;
+      setIdentifier(initialQuery);
+      setIdentifierType(detected);
+      handleSearch(initialQuery, detected);
+    }
+  }, [initialQuery]);
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">

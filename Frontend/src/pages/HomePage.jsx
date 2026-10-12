@@ -27,6 +27,14 @@ import { formatScamType, getRiskColorHex } from '../utils/globeUtils';
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [quickQuery, setQuickQuery] = useState('');
+
+  const handleQuickCheck = (e) => {
+    e?.preventDefault();
+    if (!quickQuery.trim()) return;
+    navigate(`/check?q=${encodeURIComponent(quickQuery.trim())}`);
+  };
+
   const {
     data: statsData,
     loading: statsLoading,
@@ -102,6 +110,27 @@ const HomePage = () => {
               <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
                 Check suspicious phone numbers, UPI handles, phishing links, and job offers. Report fraudulent activity to preserve cryptographic evidence and protect the community.
               </p>
+
+              {/* Quick Check Instant Input */}
+              <form onSubmit={handleQuickCheck} className="relative w-full max-w-xl mx-auto lg:mx-0 pt-1">
+                <div className="relative flex items-center">
+                  <Search className="absolute left-4 w-4 h-4 text-cyan-400 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={quickQuery}
+                    onChange={(e) => setQuickQuery(e.target.value)}
+                    placeholder="Quick check: phone number, UPI ID, or URL..."
+                    className="w-full pl-11 pr-24 py-3.5 bg-black/60 border border-cyan-500/30 rounded-xl text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50 transition-all font-mono shadow-inner"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!quickQuery.trim()}
+                    className="absolute right-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs rounded-lg transition-all shadow-md shadow-cyan-500/20 disabled:opacity-40 cursor-pointer"
+                  >
+                    Verify
+                  </button>
+                </div>
+              </form>
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
