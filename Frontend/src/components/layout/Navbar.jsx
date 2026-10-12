@@ -67,6 +67,12 @@ const Navbar = () => {
     setIsToolsOpen(false);
   };
 
+  // Automatically close mobile menu and dropdown on route navigation
+  useEffect(() => {
+    setIsOpen(false);
+    setIsToolsOpen(false);
+  }, [location.pathname]);
+
   // Close tools dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
