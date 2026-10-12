@@ -148,3 +148,16 @@
     - Sign in as "Demo Moderator"; review credibility queue, apply verdicts (`VERIFIED_ACCURATE` / `FLAGGED_INACCURATE`), and resolve disputes.
 12. **Threat Intelligence Analytics (`/dashboard`)**:
     - Inspect real daily/weekly/monthly time-series trend charts (Recharts), category breakdown, and city hotspots.
+
+---
+
+## 6. 3D Cyber Threat Globe & Frontend Layout Stabilization
+
+| Component / Module | Root Cause & Problem | Fix & Architectural Solution | Verification |
+| :--- | :--- | :--- | :--- |
+| **API Client (`axios.js`)** | Hardcoded fallback port or missing proxy path on dev environment | Set fallback `baseURL` to `/api` (proxied by Vite to port 5000), respecting `VITE_API_URL`. Prevents CORS and network failures. | Tested direct & proxied calls (HTTP 200). |
+| **API Hook (`useApi.js`)** | Rejected promises thrown in `onClick={fetchStats}` and `useEffect` produced unhandled rejections | Added `safeExecute`, caught errors in retry handlers and initial mount effects, ensuring clean reactive state transitions without unhandled console errors. | Verified clean mounts and retries. |
+| **Error & Empty States (`ErrorState.jsx`, `EmptyState.jsx`)** | Oversized disrupting error banners in statistics; no visual feedback during retry | Added `compact` layout mode, animated retry spinner with disabled state during in-flight refetches, and graceful empty state when feeds have 0 items. | Verified compact layout in telemetry section. |
+| **3D Cyber Threat Globe (`CyberThreatGlobe.jsx`)** | Displayed "0 Plotted Coordinates" and generic wireframe ball; inner rotation desynced markers | 1. Implemented procedural cyber Earth texture (`getCyberWorldTexture()`) with equirectangular world continent boundaries (`CONTINENT_POLYGONS`) and neon cyber dot-matrix.<br>2. Synchronized Three.js assembly: removed inner sphere rotation; camera `OrbitControls` rotates the unified scene.<br>3. Upgraded markers with illuminated core spheres, pulsating halo rings, vertical beacon lines, and strict risk color mapping (`#ef4444`, `#f59e0b`, `#10b981`).<br>4. Dispersed multi-report collisions at identical coordinates ($\pm 0.55^\circ$).<br>5. Replaced "0 Plotted Coordinates" with friendly "No geolocated reports yet" and informative radar telemetry notice. | Verified with real Kolkata database reports; 3D globe rendered with glowing continents and interactive markers. |
+| **Threat Inspector Overlay (`HomePage.jsx`)** | Clicking markers had no visible inspector UI on HomePage | Integrated glassmorphic "Threat Inspector" overlay on hero globe: displays city, state, modality, risk score, on-chain proof badge, and direct link to report record. | Tested marker click and inspection panel. |
+| **Navbar Layout (`Navbar.jsx`)** | 10 wide nav links caused wrapping/clipping on 1024px–1280px laptops; collapsed into hamburger prematurely | Grouped navigation into core links (`Verify`, `Threat Map`, `Scanner`, `Analytics`, `Emergency`) and an "Intel Tools" dropdown (`Patterns`, `Vault`, `Alerts`, `Safety`, `Explorer`) for desktop (`lg:flex`), keeping full categorized list in mobile drawer (`lg:hidden`). | Verified responsive rendering from 1024px to 4K without horizontal overflow. |

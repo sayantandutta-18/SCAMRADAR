@@ -50,13 +50,24 @@ export const useApi = (defaultApiCall) => {
     [defaultApiCall]
   );
 
+  const safeExecute = useCallback(
+    async (...args) => {
+      try {
+        return await execute(...args);
+      } catch {
+        return null;
+      }
+    },
+    [execute]
+  );
+
   const reset = useCallback(() => {
     setLoading(false);
     setError(null);
     setData(null);
   }, []);
 
-  return { loading, error, data, execute, reset, setData };
+  return { loading, error, data, execute, safeExecute, reset, setData };
 };
 
 export default useApi;

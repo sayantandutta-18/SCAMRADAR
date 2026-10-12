@@ -246,6 +246,9 @@ export default function MapPage() {
                 selectedReport={selectedReport}
                 onSelectReport={setSelectedReport}
                 fallbackTo2D={() => setViewMode('2d')}
+                loading={loading}
+                error={error}
+                onRetry={execute}
                 className="w-full h-full"
               />
             )}

@@ -1,36 +1,71 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Shield, Brain, Link as LinkIcon, ArrowRight, Activity, MapPin, Search, AlertOctagon, Lock, Globe } from 'lucide-react';
+import {
+  Shield,
+  Brain,
+  Link as LinkIcon,
+  ArrowRight,
+  Activity,
+  MapPin,
+  Search,
+  AlertOctagon,
+  Lock,
+  Globe,
+  X,
+  ExternalLink,
+} from 'lucide-react';
 import { getReportStats, getReports, getMapReports } from '../api/reports.api';
 import { useApi } from '../hooks/useApi';
 import AnimatedCounter from '../components/common/AnimatedCounter';
 import ReportCard from '../components/reports/ReportCard';
 import LoadingSkeleton from '../components/common/LoadingSkeleton';
 import ErrorState from '../components/common/ErrorState';
+import EmptyState from '../components/common/EmptyState';
 import CyberThreatGlobe from '../components/globe/CyberThreatGlobe';
+import { formatScamType, getRiskColorHex } from '../utils/globeUtils';
 
 const HomePage = () => {
-  const { data: statsData, loading: statsLoading, error: statsError, execute: fetchStats } = useApi(getReportStats);
-  const { data: recentReportsData, loading: reportsLoading, error: reportsError, execute: fetchReports } = useApi(getReports);
-  const { data: mapData, execute: fetchMap } = useApi(getMapReports);
+  const navigate = useNavigate();
+  const {
+    data: statsData,
+    loading: statsLoading,
+    error: statsError,
+    execute: fetchStats,
+  } = useApi(getReportStats);
+
+  const {
+    data: recentReportsData,
+    loading: reportsLoading,
+    error: reportsError,
+    execute: fetchReports,
+  } = useApi(getReports);
+
+  const {
+    data: mapData,
+    loading: mapLoading,
+    error: mapError,
+    execute: fetchMap,
+  } = useApi(getMapReports);
 
   const [selectedGlobeReport, setSelectedGlobeReport] = useState(null);
 
   useEffect(() => {
-    fetchStats();
-    fetchReports({ limit: 6 });
-    fetchMap();
+    fetchStats().catch(() => {});
+    fetchReports({ limit: 6 }).catch(() => {});
+    fetchMap().catch(() => {});
   }, [fetchStats, fetchReports, fetchMap]);
 
   const stats = statsData?.data || {};
   const recentReports = Array.isArray(recentReportsData?.data)
     ? recentReportsData.data
-    : (recentReportsData?.reports || recentReportsData?.data?.reports || []);
+    : recentReportsData?.reports || recentReportsData?.data?.reports || [];
 
   const mapReports = Array.isArray(mapData?.data)
     ? mapData.data
-    : (Array.isArray(mapData) ? mapData : []);
+    : Array.isArray(mapData)
+    ? mapData
+    : [];
 
   const uniqueScamTypes = stats.scamTypeStats?.length || 0;
   const uniqueCities = stats.cityStats?.length || 0;
@@ -38,9 +73,9 @@ const HomePage = () => {
   return (
     <div className="w-full text-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-8 pb-16 sm:py-20 lg:py-24 border-b border-white/5">
+      <section className="relative overflow-hidden pt-8 pb-14 sm:py-16 lg:py-20 border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left Column: Value Proposition & CTAs */}
             <motion.div
               className="lg:col-span-7 space-y-6 text-center lg:text-left"
@@ -115,17 +150,20 @@ const HomePage = () => {
 
             {/* Right Column: Interactive 3D Cyber Threat Globe Preview */}
             <motion.div
-              className="lg:col-span-5 h-[380px] sm:h-[440px] relative"
+              className="lg:col-span-5 h-[400px] sm:h-[460px] relative"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <div className="w-full h-full relative rounded-2xl bg-gradient-to-b from-slate-950/60 to-slate-900/40 border border-white/10 shadow-2xl overflow-hidden backdrop-blur-xl">
+              <div className="w-full h-full relative rounded-2xl bg-gradient-to-b from-slate-950/70 to-slate-900/50 border border-white/10 shadow-2xl overflow-hidden backdrop-blur-xl">
                 {/* Globe Canvas */}
                 <CyberThreatGlobe
                   reports={mapReports}
                   selectedReport={selectedGlobeReport}
                   onSelectReport={setSelectedGlobeReport}
+                  loading={mapLoading}
+                  error={mapError}
+                  onRetry={fetchMap}
                   compact={true}
                   className="w-full h-full"
                 />
@@ -134,12 +172,76 @@ const HomePage = () => {
                 <div className="absolute top-3 right-3 z-20">
                   <Link
                     to="/map"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 border border-cyan-500/30 text-cyan-300 text-xs font-semibold backdrop-blur-md transition-all hover:scale-105"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950/85 hover:bg-slate-900 border border-cyan-500/30 text-cyan-300 text-xs font-semibold backdrop-blur-md transition-all hover:scale-105"
                   >
                     <span>Full 3D Map</span>
                     <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
+
+                {/* Threat Node Inspector Overlay when a node is clicked */}
+                {selectedGlobeReport && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 15 }}
+                    className="absolute bottom-3 left-3 right-3 z-30 p-3.5 rounded-xl bg-slate-950/95 border border-cyan-500/50 shadow-2xl backdrop-blur-xl text-left"
+                  >
+                    <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: getRiskColorHex(selectedGlobeReport.riskLevel) }}
+                        />
+                        <span className="text-xs font-mono font-bold text-white uppercase">
+                          {selectedGlobeReport.location?.city || 'Threat Node'}
+                          {selectedGlobeReport.location?.state ? `, ${selectedGlobeReport.location.state}` : ''}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedGlobeReport(null)}
+                        className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+                        title="Close Inspector"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <div className="mt-2.5 flex items-center justify-between text-xs">
+                      <div className="space-y-0.5">
+                        <span className="text-slate-400 text-[11px] block">Modality:</span>
+                        <span className="font-semibold text-cyan-300">
+                          {formatScamType(selectedGlobeReport.scamType)}
+                        </span>
+                      </div>
+                      <div className="text-right space-y-0.5">
+                        <span className="text-slate-400 text-[11px] block">Risk Score:</span>
+                        <span
+                          className="font-mono font-bold"
+                          style={{ color: getRiskColorHex(selectedGlobeReport.riskLevel) }}
+                        >
+                          {selectedGlobeReport.riskScore !== undefined
+                            ? `${selectedGlobeReport.riskScore}/100`
+                            : selectedGlobeReport.riskLevel}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between">
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        {selectedGlobeReport.blockchain?.registered ? '✓ Immutable On-Chain' : 'Flagged Incident'}
+                      </span>
+                      <Link
+                        to={`/reports/${selectedGlobeReport._id || selectedGlobeReport.id}`}
+                        className="inline-flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+                      >
+                        <span>View Details</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </Link>
+                    </div>
+                  </motion.div>
+                )}
               </div>
             </motion.div>
           </div>
@@ -147,9 +249,9 @@ const HomePage = () => {
       </section>
 
       {/* Platform Telemetry Section (Real API stats) */}
-      <section className="py-16 sm:py-20 bg-slate-950/40 border-b border-white/5">
+      <section className="py-14 sm:py-16 bg-slate-950/40 border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="text-center mb-10">
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Platform Threat Telemetry</h2>
             <p className="text-slate-400 text-sm mt-1">Live metrics compiled directly from verified reports.</p>
           </div>
@@ -161,7 +263,12 @@ const HomePage = () => {
               ))}
             </div>
           ) : statsError ? (
-            <ErrorState message="Unable to load statistics" onRetry={fetchStats} />
+            <ErrorState
+              compact
+              title="Telemetry Feed Temporarily Unavailable"
+              message="Unable to synchronize live platform statistics. Check connection and retry."
+              onRetry={fetchStats}
+            />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center hover:border-cyan-500/30 transition-all">
@@ -201,17 +308,17 @@ const HomePage = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-16 sm:py-20">
+      <section className="py-14 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">How ScamRadar Protects You</h2>
             <p className="text-slate-400 text-sm mt-1">
               Three-layer verification bridging machine intelligence, community reports, and on-chain immutability.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-8 text-center space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-8 text-center space-y-4 hover:border-cyan-500/30 transition-all">
               <div className="w-14 h-14 bg-cyan-500/20 border border-cyan-500/30 rounded-2xl flex items-center justify-center mx-auto text-xl font-black text-cyan-400 font-mono">
                 01
               </div>
@@ -221,7 +328,7 @@ const HomePage = () => {
               </p>
             </div>
 
-            <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-8 text-center space-y-4">
+            <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-8 text-center space-y-4 hover:border-blue-500/30 transition-all">
               <div className="w-14 h-14 bg-blue-500/20 border border-blue-500/30 rounded-2xl flex items-center justify-center mx-auto text-xl font-black text-blue-400 font-mono">
                 02
               </div>
@@ -231,7 +338,7 @@ const HomePage = () => {
               </p>
             </div>
 
-            <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-8 text-center space-y-4">
+            <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-8 text-center space-y-4 hover:border-emerald-500/30 transition-all">
               <div className="w-14 h-14 bg-emerald-500/20 border border-emerald-500/30 rounded-2xl flex items-center justify-center mx-auto text-xl font-black text-emerald-400 font-mono">
                 03
               </div>
@@ -245,7 +352,7 @@ const HomePage = () => {
       </section>
 
       {/* Recent Incident Feed */}
-      <section className="py-16 sm:py-20 bg-slate-950/40 border-t border-white/5">
+      <section className="py-14 sm:py-16 bg-slate-950/40 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
@@ -271,7 +378,12 @@ const HomePage = () => {
               ))}
             </div>
           ) : reportsError ? (
-            <ErrorState message="Failed to load recent reports" onRetry={() => fetchReports({ limit: 6 })} />
+            <ErrorState
+              compact
+              title="Recent Incident Feed Unavailable"
+              message="Failed to load recent community reports. Please verify your connection."
+              onRetry={() => fetchReports({ limit: 6 })}
+            />
           ) : recentReports.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {recentReports.map((report) => (
@@ -279,9 +391,12 @@ const HomePage = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center text-slate-400 py-12 bg-slate-900/40 rounded-2xl border border-white/10">
-              No recent reports recorded in the system yet.
-            </div>
+            <EmptyState
+              title="No Recent Incident Reports"
+              description="No community threat reports recorded yet in the database. Be the first to report fraudulent activity."
+              actionLabel="Report a Scam"
+              onAction={() => navigate('/report')}
+            />
           )}
         </div>
       </section>
