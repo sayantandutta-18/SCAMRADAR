@@ -18,9 +18,9 @@ import {
   ExternalLink,
   ShieldAlert,
   Inbox,
-  Filter,
 } from 'lucide-react';
 import { SCAM_TYPES } from '../constants/scamTypes';
+import BackButton from '../components/common/BackButton';
 
 const AlertsPage = () => {
   const { user, isAuthenticated, updateAlertPreferences } = useAuth();
@@ -162,8 +162,11 @@ const AlertsPage = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-2xl p-8 text-center backdrop-blur-md shadow-2xl">
+      <div className="w-full max-w-md mx-auto px-4 py-12">
+        <div className="mb-4">
+          <BackButton fallbackPath="/" />
+        </div>
+        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-8 text-center backdrop-blur-md shadow-2xl">
           <div className="w-16 h-16 rounded-full bg-teal-500/10 border border-teal-500/30 flex items-center justify-center mx-auto mb-4 text-teal-400">
             <Bell className="w-8 h-8" />
           </div>
@@ -184,6 +187,10 @@ const AlertsPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <div className="mb-6">
+        <BackButton fallbackPath="/dashboard" />
+      </div>
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>

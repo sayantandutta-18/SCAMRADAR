@@ -18,6 +18,7 @@ import {
 import { verifyReportOnChain } from '../api/reports.api';
 import { useApi } from '../hooks/useApi';
 import { formatDateTime } from '../utils/formatters';
+import BackButton from '../components/common/BackButton';
 
 const SAMPLE_REPORTS = [
   {
@@ -196,12 +197,16 @@ const ExplorerPage = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      {/* Header */}
-      <div className="text-center mb-10 max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono mb-3">
+      <div className="flex items-center justify-between mb-6">
+        <BackButton label="Back to Home" fallbackPath="/" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono">
           <Database className="w-3.5 h-3.5" />
           <span>DECENTRALIZED IMMUTABILITY AUDIT</span>
         </div>
+      </div>
+
+      {/* Header */}
+      <div className="text-center mb-10 max-w-3xl mx-auto">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
           Blockchain Proof Explorer
         </h1>
@@ -226,7 +231,7 @@ const ExplorerPage = () => {
           <button
             type="submit"
             disabled={loading || !reportIdInput.trim()}
-            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 disabled:opacity-50"
+            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 disabled:opacity-50 cursor-pointer"
           >
             {loading ? (
               <>
@@ -247,9 +252,10 @@ const ExplorerPage = () => {
           <span className="text-slate-400 font-semibold mr-1">Quick Test Reports:</span>
           {SAMPLE_REPORTS.map((sample) => (
             <button
+              type="button"
               key={sample.id}
               onClick={() => handleSelectSample(sample.id)}
-              className={`px-3 py-1 rounded-lg border text-xs font-mono transition-colors flex items-center gap-1.5 ${
+              className={`px-3 py-1 rounded-lg border text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer ${
                 reportIdInput === sample.id
                   ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300'
                   : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'

@@ -40,6 +40,7 @@ import LoadingSkeleton from '../components/common/LoadingSkeleton';
 import ErrorState from '../components/common/ErrorState';
 import EmptyState from '../components/common/EmptyState';
 import ReportCard from '../components/reports/ReportCard';
+import BackButton from '../components/common/BackButton';
 import { SCAM_TYPES } from '../constants/scamTypes';
 
 const COLORS = ['#06b6d4', '#3b82f6', '#f59e0b', '#ef4444', '#10b981', '#8b5cf6', '#ec4899', '#f97316'];
@@ -112,6 +113,10 @@ const DashboardPage = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="mb-6">
+        <BackButton fallbackPath="/" />
+      </div>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
@@ -124,6 +129,7 @@ const DashboardPage = () => {
         </div>
 
         <button
+          type="button"
           onClick={fetchDashboardData}
           className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-semibold text-teal-400 transition-colors self-start sm:self-auto"
         >
@@ -215,6 +221,7 @@ const DashboardPage = () => {
             <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
               {['day', 'week', 'month'].map((iv) => (
                 <button
+                  type="button"
                   key={iv}
                   onClick={() => setTrendInterval(iv)}
                   className={`px-3 py-1 rounded-lg text-xs font-semibold capitalize transition-all ${
@@ -231,6 +238,7 @@ const DashboardPage = () => {
             <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
               {[7, 30, 90].map((d) => (
                 <button
+                  type="button"
                   key={d}
                   onClick={() => setTrendDays(d)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${

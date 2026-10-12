@@ -23,6 +23,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { SAFETY_LANGUAGES, CATEGORIES_DATA, QUIZ_QUESTIONS } from '../data/safetyGuides';
+import BackButton from '../components/common/BackButton';
 
 const ICON_MAP = {
   CreditCard,
@@ -200,6 +201,10 @@ const SafetyPage = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="mb-6">
+        <BackButton label="Back to Home" fallbackPath="/" />
+      </div>
+
       {/* Header & Language Switcher */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 pb-6 border-b border-white/10">
         <div>
@@ -220,9 +225,10 @@ const SafetyPage = () => {
           <Languages className="w-4 h-4 text-slate-400 ml-2 mr-1" />
           {SAFETY_LANGUAGES.map((langItem) => (
             <button
+              type="button"
               key={langItem.code}
               onClick={() => setLang(langItem.code)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 lang === langItem.code
                   ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md shadow-cyan-500/20'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'

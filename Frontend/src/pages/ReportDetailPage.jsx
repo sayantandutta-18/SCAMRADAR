@@ -23,6 +23,7 @@ import BlockchainBadge from '../components/blockchain/BlockchainBadge';
 import ReportTimeline from '../components/reports/ReportTimeline';
 import LoadingSkeleton from '../components/common/LoadingSkeleton';
 import ErrorState from '../components/common/ErrorState';
+import BackButton from '../components/common/BackButton';
 
 const ReportDetailPage = () => {
   const { id } = useParams();
@@ -112,13 +113,7 @@ const ReportDetailPage = () => {
   return (
     <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       <div className="flex items-center justify-between gap-4 mb-8">
-        <Link
-          to="/reports"
-          className="inline-flex items-center text-slate-400 hover:text-cyan-300 transition-colors text-sm font-medium gap-1.5"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Return to Incidents</span>
-        </Link>
+        <BackButton label="Back to Incidents" fallbackPath="/reports" />
 
         <button
           onClick={() => setShowDisputeModal(true)}

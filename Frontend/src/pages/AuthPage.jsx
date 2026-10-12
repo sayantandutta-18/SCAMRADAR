@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Shield, Lock, Mail, User, CheckCircle2, AlertCircle, ArrowRight, KeyRound } from 'lucide-react';
+import BackButton from '../components/common/BackButton';
 
 const AuthPage = () => {
   const [isRegister, setIsRegister] = useState(false);
@@ -83,8 +84,11 @@ const AuthPage = () => {
 
   if (isAuthenticated && user) {
     return (
-      <div className="min-h-[75vh] flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md bg-slate-900/90 border border-teal-500/30 rounded-2xl p-8 backdrop-blur-md shadow-2xl text-center">
+      <div className="w-full max-w-md mx-auto px-4 py-12">
+        <div className="mb-4">
+          <BackButton fallbackPath="/" />
+        </div>
+        <div className="bg-slate-900/90 border border-teal-500/30 rounded-2xl p-8 backdrop-blur-md shadow-2xl text-center">
           <div className="w-16 h-16 rounded-full bg-teal-500/10 border border-teal-500/30 flex items-center justify-center mx-auto mb-4 text-teal-400">
             <Shield className="w-8 h-8" />
           </div>
@@ -99,18 +103,21 @@ const AuthPage = () => {
 
           <div className="space-y-3">
             <button
+              type="button"
               onClick={() => navigate('/vault')}
               className="w-full py-2.5 px-4 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold transition-all flex items-center justify-center gap-2"
             >
               Go to Private Evidence Vault <ArrowRight className="w-4 h-4" />
             </button>
             <button
+              type="button"
               onClick={() => navigate('/alerts')}
               className="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium transition-all"
             >
               View Threat Alerts
             </button>
             <button
+              type="button"
               onClick={logout}
               className="w-full py-2 px-4 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 font-medium transition-all text-sm mt-4"
             >
@@ -123,8 +130,11 @@ const AuthPage = () => {
   }
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-2xl p-8 backdrop-blur-md shadow-2xl relative overflow-hidden">
+    <div className="w-full max-w-md mx-auto px-4 py-12">
+      <div className="mb-4">
+        <BackButton fallbackPath="/" />
+      </div>
+      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-8 backdrop-blur-md shadow-2xl relative overflow-hidden">
         {/* Ambient Top Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-teal-500 to-transparent"></div>
 

@@ -8,7 +8,7 @@ import { AlertCircle, CheckCircle2, Loader2, MapPin, Send, ArrowRight, Info } fr
 import BlockchainBadge from '../blockchain/BlockchainBadge';
 import { formatDate } from '../../utils/formatters';
 
-const ReportForm = () => {
+const ReportForm = ({ hideHeader = false }) => {
   const [formData, setFormData] = useState({
     identifier: '',
     identifierType: IDENTIFIER_TYPES.PHONE,
@@ -180,12 +180,14 @@ const ReportForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto space-y-6 bg-slate-900/60 p-6 sm:p-8 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-xl">
-      <div>
-        <h2 className="text-2xl font-bold text-white mb-1">Submit a Scam Report</h2>
-        <p className="text-slate-400 text-sm">
-          Report suspicious phone numbers, UPI IDs, emails, URLs, or profiles to warn others.
-        </p>
-      </div>
+      {!hideHeader && (
+        <div>
+          <h2 className="text-2xl font-bold text-white mb-1">Submit a Scam Report</h2>
+          <p className="text-slate-400 text-sm">
+            Report suspicious phone numbers, UPI IDs, emails, URLs, or profiles to warn others.
+          </p>
+        </div>
+      )}
 
       {error && !duplicateReport && (
         <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3 text-red-400 text-sm">

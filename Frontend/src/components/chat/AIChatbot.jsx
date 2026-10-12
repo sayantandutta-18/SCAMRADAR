@@ -11,12 +11,14 @@ const AIChatbot = () => {
       <div className="fixed bottom-6 right-6 z-50">
         {!isOpen && (
           <motion.button
+            type="button"
+            aria-label="Open AI Fraud Assistant"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsOpen(true)}
-            className="relative h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white shadow-lg hover:shadow-blue-500/25 transition-all group"
+            className="relative h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white shadow-lg hover:shadow-blue-500/25 transition-all group focus:outline-none focus:ring-2 focus:ring-cyan-400"
           >
             <div className="absolute inset-0 rounded-full bg-blue-500 opacity-20 animate-ping"></div>
             <MessageSquare size={24} className="relative z-10 group-hover:animate-pulse" />

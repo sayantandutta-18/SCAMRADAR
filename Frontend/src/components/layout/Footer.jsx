@@ -27,6 +27,7 @@ const Footer = () => {
             <h3 className="text-sm font-semibold text-slate-200 tracking-wider uppercase mb-4">Platform</h3>
             <ul className="space-y-3">
               <li><Link to="/check" className="text-slate-400 hover:text-white transition-colors">Verify Identifier</Link></li>
+              <li><Link to="/report" className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium">Submit Scam Report</Link></li>
               <li><Link to="/scanner" className="text-slate-400 hover:text-cyan-300 transition-colors">OCR Message Scanner</Link></li>
               <li><Link to="/intelligence/patterns" className="text-slate-400 hover:text-cyan-300 transition-colors">Pattern Intelligence Graph</Link></li>
               <li><Link to="/intelligence/url-email" className="text-slate-400 hover:text-cyan-300 transition-colors">URL & Email Intel</Link></li>

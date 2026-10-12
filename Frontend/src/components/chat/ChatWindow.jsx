@@ -104,22 +104,30 @@ const ChatWindow = ({ isOpen, onClose }) => {
           <div className="flex items-center space-x-2 text-slate-400">
             {messages.length > 0 && !isMinimized && (
               <button 
+                type="button"
                 onClick={clearChat}
                 className="p-1 hover:text-white transition-colors rounded-lg hover:bg-white/5"
                 title="Clear chat"
+                aria-label="Clear chat"
               >
                 <Trash2 size={16} />
               </button>
             )}
             <button 
+              type="button"
               onClick={() => setIsMinimized(!isMinimized)}
               className="p-1 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+              title={isMinimized ? "Expand chat" : "Minimize chat"}
+              aria-label={isMinimized ? "Expand chat" : "Minimize chat"}
             >
               <Minus size={18} />
             </button>
             <button 
+              type="button"
               onClick={onClose}
               className="p-1 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+              title="Close chat"
+              aria-label="Close chat"
             >
               <X size={18} />
             </button>
@@ -144,6 +152,7 @@ const ChatWindow = ({ isOpen, onClose }) => {
                   <div className="w-full flex flex-col gap-2 mt-4 px-2">
                     {SUGGESTED_CHAT_QUESTIONS && SUGGESTED_CHAT_QUESTIONS.map((question, idx) => (
                       <button
+                        type="button"
                         key={idx}
                         onClick={() => handleSend(question)}
                         className="text-left text-sm py-2 px-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors text-slate-300 hover:text-white"
@@ -214,9 +223,11 @@ const ChatWindow = ({ isOpen, onClose }) => {
                   disabled={isLoading}
                 />
                 <button
+                  type="button"
+                  aria-label="Send message"
                   onClick={() => handleSend()}
                   disabled={!inputValue.trim() || isLoading}
-                  className="absolute right-2 p-2 rounded-full bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-500 transition-colors"
+                  className="absolute right-2 p-2 rounded-full bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-500 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400"
                 >
                   <Send size={16} />
                 </button>

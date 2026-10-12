@@ -10,6 +10,7 @@ import EmptyState from '../components/common/EmptyState';
 import CyberThreatGlobe from '../components/globe/CyberThreatGlobe';
 import ThreatIntelPanel from '../components/globe/ThreatIntelPanel';
 import ReportCard from '../components/reports/ReportCard';
+import BackButton from '../components/common/BackButton';
 import { SCAM_TYPES } from '../constants/scamTypes';
 
 const getLeafletRiskColor = (level) => {
@@ -101,6 +102,10 @@ export default function MapPage() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col min-h-[calc(100vh-4rem)]">
+      <div className="mb-4">
+        <BackButton fallbackPath="/" />
+      </div>
+
       {/* Top Banner & Control Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>

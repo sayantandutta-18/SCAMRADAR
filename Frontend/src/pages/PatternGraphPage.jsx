@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { getScamPatternGraph } from '../api/intelligence.api';
 import { useApi } from '../hooks/useApi';
+import BackButton from '../components/common/BackButton';
 import { getRiskColorClass } from '../utils/formatters';
 
 const SCAM_TYPES = [
@@ -64,8 +65,8 @@ const PatternGraphPage = () => {
   }, [selectedScamType, nodeLimit]);
 
   const graphData = data?.data || data;
-  const nodes = graphData?.nodes || [];
-  const edges = graphData?.edges || [];
+  const nodes = useMemo(() => graphData?.nodes || [], [graphData]);
+  const edges = useMemo(() => graphData?.edges || [], [graphData]);
 
   // Initialize node layout positions in circular/force ring
   useEffect(() => {
@@ -181,6 +182,10 @@ const PatternGraphPage = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="mb-6">
+        <BackButton fallbackPath="/" />
+      </div>
+
       {/* Header */}
       <div className="text-center mb-8 max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono mb-3">

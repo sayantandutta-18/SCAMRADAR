@@ -7,6 +7,7 @@ import ReportCard from '../components/reports/ReportCard';
 import LoadingSkeleton from '../components/common/LoadingSkeleton';
 import ErrorState from '../components/common/ErrorState';
 import EmptyState from '../components/common/EmptyState';
+import BackButton from '../components/common/BackButton';
 import { Search, FileText } from 'lucide-react';
 
 const ReportsListPage = () => {
@@ -52,6 +53,10 @@ const ReportsListPage = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="mb-6">
+        <BackButton fallbackPath="/" />
+      </div>
+
       <div className="mb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono mb-3">
           <FileText className="w-3.5 h-3.5" />
@@ -94,6 +99,7 @@ const ReportsListPage = () => {
             {totalPages > 1 && (
               <div className="mt-12 flex justify-center items-center gap-4">
                 <button
+                  type="button"
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
                   className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl disabled:opacity-40 hover:bg-white/10 transition-colors text-sm font-medium"
@@ -104,6 +110,7 @@ const ReportsListPage = () => {
                   Page {currentPage} of {totalPages}
                 </span>
                 <button
+                  type="button"
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
                   className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl disabled:opacity-40 hover:bg-white/10 transition-colors text-sm font-medium"

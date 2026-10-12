@@ -13,7 +13,6 @@ import {
   addVaultTransaction,
 } from '../api/vault.api';
 import {
-  Shield,
   Lock,
   Plus,
   FolderLock,
@@ -21,22 +20,18 @@ import {
   Clock,
   Trash2,
   Download,
-  AlertTriangle,
-  CheckCircle2,
   ArrowLeft,
-  Calendar,
   CreditCard,
-  IndianRupee,
   Search,
   UploadCloud,
   FileCheck,
   ChevronRight,
-  Eye,
 } from 'lucide-react';
 import { SCAM_TYPES } from '../constants/scamTypes';
+import BackButton from '../components/common/BackButton';
 
 const VaultPage = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const [cases, setCases] = useState([]);
@@ -272,6 +267,10 @@ const VaultPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="mb-6">
+        <BackButton fallbackPath="/dashboard" />
+      </div>
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>

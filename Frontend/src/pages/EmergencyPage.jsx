@@ -17,6 +17,7 @@ import {
   KeyRound,
   Ban
 } from 'lucide-react';
+import BackButton from '../components/common/BackButton';
 
 const EMERGENCY_STEPS = [
   {
@@ -240,12 +241,16 @@ Present this compiled evidence to your bank fraud division within the Golden Hou
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      {/* Hero Header */}
-      <div className="text-center mb-10 max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono mb-3">
+      <div className="flex items-center justify-between mb-6">
+        <BackButton label="Back to Home" fallbackPath="/" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono">
           <AlertOctagon className="w-3.5 h-3.5 animate-pulse" />
           <span>IMMEDIATE INCIDENT RESPONSE SYSTEM</span>
         </div>
+      </div>
+
+      {/* Hero Header */}
+      <div className="text-center mb-10 max-w-3xl mx-auto">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
           Emergency Help Center: I've Already Been Scammed
         </h1>

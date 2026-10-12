@@ -20,6 +20,8 @@ import {
   LogOut,
   LogIn,
   ChevronDown,
+  FileText,
+  Link2,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
@@ -33,6 +35,8 @@ const primaryNavLinks = [
 ];
 
 const secondaryNavLinks = [
+  { name: 'Incident Database', path: '/reports', icon: FileText },
+  { name: 'URL & Email Intel', path: '/intelligence/url-email', icon: Link2 },
   { name: 'Patterns', path: '/intelligence/patterns', icon: Network },
   { name: 'Vault', path: '/vault', icon: FolderLock, badge: 'Private' },
   { name: 'Alerts', path: '/alerts', icon: Bell },
@@ -42,6 +46,7 @@ const secondaryNavLinks = [
 
 const allMobileLinks = [
   { name: 'Home', path: '/', icon: Home },
+  { name: 'Report Incident', path: '/report', icon: ShieldAlert },
   ...primaryNavLinks,
   ...secondaryNavLinks,
   { name: 'Emergency Help', path: '/emergency', icon: LifeBuoy, highlight: true },
@@ -214,6 +219,19 @@ const Navbar = () => {
               </AnimatePresence>
             </div>
 
+            {/* Report Scam Button */}
+            <NavLink
+              to="/report"
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                location.pathname === '/report'
+                  ? 'bg-cyan-500 text-slate-950 shadow-[0_0_12px_rgba(6,182,212,0.3)]'
+                  : 'text-cyan-400 hover:text-white hover:bg-cyan-500/15 border border-cyan-500/30 bg-cyan-500/5'
+              }`}
+            >
+              <ShieldAlert className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Report Scam</span>
+            </NavLink>
+
             {/* Emergency Help Button */}
             <NavLink
               to="/emergency"
@@ -271,9 +289,11 @@ const Navbar = () => {
                 </NavLink>
 
                 <button
+                  type="button"
                   onClick={logout}
                   className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-red-400 hover:border-red-500/30 transition-colors cursor-pointer"
                   title="Sign Out"
+                  aria-label="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
@@ -290,6 +310,7 @@ const Navbar = () => {
 
             {/* Mobile Hamburger Button */}
             <button
+              type="button"
               onClick={toggleMenu}
               aria-label="Toggle navigation menu"
               className="lg:hidden inline-flex items-center justify-center p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-colors cursor-pointer"
@@ -364,6 +385,7 @@ const Navbar = () => {
               <div className="pt-2 border-t border-slate-800">
                 {isAuthenticated ? (
                   <button
+                    type="button"
                     onClick={() => {
                       logout();
                       closeMenu();
