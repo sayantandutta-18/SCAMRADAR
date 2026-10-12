@@ -198,3 +198,64 @@ body {
   background-color: #1E293B !important;
   color: #FFFFFF !important;
 }
+
+/* Design Tokens: Standard Buttons & Focus States */
+.btn-cyber-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  min-height: 2.75rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #020617;
+  background: linear-gradient(to right, #06b6d4, #2563eb);
+  box-shadow: 0 4px 14px 0 rgba(6, 182, 212, 0.25);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.btn-cyber-primary:hover:not(:disabled) {
+  background: linear-gradient(to right, #22d3ee, #3b82f6);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(6, 182, 212, 0.35);
+}
+.btn-cyber-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-cyber-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  min-height: 2.75rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #f8fafc;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.btn-cyber-secondary:hover:not(:disabled) {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(6, 182, 212, 0.4);
+  color: #22d3ee;
+}
+
+/* Universal Accessible Focus Indicator */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #06b6d4 !important;
+  outline-offset: 2px !important;
+}

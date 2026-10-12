@@ -161,3 +161,48 @@
 | **3D Cyber Threat Globe (`CyberThreatGlobe.jsx`)** | Displayed "0 Plotted Coordinates" and generic wireframe ball; inner rotation desynced markers | 1. Implemented procedural cyber Earth texture (`getCyberWorldTexture()`) with equirectangular world continent boundaries (`CONTINENT_POLYGONS`) and neon cyber dot-matrix.<br>2. Synchronized Three.js assembly: removed inner sphere rotation; camera `OrbitControls` rotates the unified scene.<br>3. Upgraded markers with illuminated core spheres, pulsating halo rings, vertical beacon lines, and strict risk color mapping (`#ef4444`, `#f59e0b`, `#10b981`).<br>4. Dispersed multi-report collisions at identical coordinates ($\pm 0.55^\circ$).<br>5. Replaced "0 Plotted Coordinates" with friendly "No geolocated reports yet" and informative radar telemetry notice. | Verified with real Kolkata database reports; 3D globe rendered with glowing continents and interactive markers. |
 | **Threat Inspector Overlay (`HomePage.jsx`)** | Clicking markers had no visible inspector UI on HomePage | Integrated glassmorphic "Threat Inspector" overlay on hero globe: displays city, state, modality, risk score, on-chain proof badge, and direct link to report record. | Tested marker click and inspection panel. |
 | **Navbar Layout (`Navbar.jsx`)** | 10 wide nav links caused wrapping/clipping on 1024px–1280px laptops; collapsed into hamburger prematurely | Grouped navigation into core links (`Verify`, `Threat Map`, `Scanner`, `Analytics`, `Emergency`) and an "Intel Tools" dropdown (`Patterns`, `Vault`, `Alerts`, `Safety`, `Explorer`) for desktop (`lg:flex`), keeping full categorized list in mobile drawer (`lg:hidden`). | Verified responsive rendering from 1024px to 4K without horizontal overflow. |
+
+---
+
+## 7. Master Execution — Checkpoint 0: Project Audit & Safe Baseline
+
+### A. Architecture Baseline
+- **Frontend Stack**: React 19.2.8, Vite 8.2.2, Tailwind CSS 4.3.3 via `@tailwindcss/vite`, React Router DOM 7.18.2 with lazy loading (`Suspense`), Lucide React 1.35.0, Framer Motion 13.1.1, Three.js 0.186.1, `@react-three/fiber` 9.8.1, `@react-three/drei` 10.7.9, Leaflet 1.9.4, Recharts 3.10.1, Axios 1.20.0, Oxlint 1.79.0.
+- **Backend Stack**: Express 5.2.1, Node.js 24, MongoDB Mongoose 9.9.3, Google Gemini 3.1 Flash Lite via `@google/genai`, Ethers.js 6.17.0, JWT, Bcrypt.
+- **Blockchain Stack**: Hardhat, Solidity 0.8.24, OpenZeppelin (`ScamReportRegistry.sol` on local node / Polygon EVM).
+- **Active Daemons**:
+  - Hardhat node: port 8545 (running, verified)
+  - Backend server: port 5000 (running, verified)
+  - Frontend dev server: port 3000 (running, verified)
+
+### B. Identified Issue Checklist (Targeted for Checkpoints 1 – 10)
+1. **Critical Syntax & Runtime Bugs**:
+   - `ReportsListPage.jsx`: Missing `useMemo` in React import causes `ReferenceError: useMemo is not defined` when navigating to `/reports`.
+   - `NotFoundPage.jsx`: Contains redundant `min-h-screen bg-slate-900` inside `<Layout>`, causing double-wrapper height overflow.
+2. **Duplicated Headers & Visual Clutter**:
+   - `CheckPage.jsx` + `ScamChecker.jsx`: Stacked duplicate headers ("Check Identifier Safety" immediately followed by "Scam Checker").
+   - `ReportPage.jsx` + `ReportForm.jsx`: Stacked duplicate headers ("Report a Scam Incident" immediately followed by "Submit a Scam Report").
+3. **Navigation & In-App Navigation Gaps**:
+   - No standardized in-app Back button component across subpages (`CheckPage`, `ReportPage`, `ScannerPage`, `UrlEmailIntelPage`, `PatternGraphPage`, `VaultPage`, `AlertsPage`, `ModerationPage`, `SafetyPage`, `EmergencyPage`).
+   - `ReportDetailPage.jsx`: Hardcodes `/reports` instead of smart history back navigation with fallback.
+4. **Form Controls & Button Accessibility**:
+   - Buttons inside `IdentifierInput.jsx` and filter widgets lack explicit `type="button"`, causing unintended form submissions.
+   - Form inputs lack high-visibility focus-visible rings for keyboard users.
+   - Contrast on muted text (`text-slate-500`) falls below WCAG AA on dark backdrops.
+5. **Mobile Layout & Chatbot Clashing**:
+   - Floating `AIChatbot` widget at `bottom-6 right-6` risks occluding footer links and mobile action buttons on screens $<640\text{px}$.
+   - Touch targets on certain small pills and buttons are under $44\text{px}$.
+6. **Design System & Typography Tokenization**:
+   - Inconsistent padding across page containers (`py-8 sm:py-12` vs `py-16`).
+   - Text sizes like `text-[9px]` and `text-[10px]` are illegible on mobile devices and need scaling to minimum `text-xs` (12px).
+
+### C. Checkpoint 0 Acceptance Criteria Verification
+- [x] Written issue checklist generated and documented.
+- [x] Project architecture, stacks, and routes audited and confirmed without modifying backend.
+- [x] Git working tree clean, baseline commit frozen (`4c70fb6`).
+- [x] Baseline build and tests passing:
+  - Frontend build: `npm run build` succeeds (1.94s).
+  - Blockchain tests: `npx hardhat test` succeeds (11/11 passing).
+  - Backend health: `GET /api/health` returns HTTP 200.
+- **Current Status**: Checkpoint 0 COMPLETE.
+- **Next Checkpoint**: Checkpoint 1 — Design System, Typography & CSS Repair.
